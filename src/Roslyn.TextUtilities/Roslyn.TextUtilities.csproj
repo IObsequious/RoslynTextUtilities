@@ -1,0 +1,86 @@
+﻿<Project>
+
+  <PropertyGroup>
+    <PackageId>Roslyn.TextUtilities</PackageId>
+    <!--<CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>-->
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <Authors>Brad R. Marshall, Microsoft</Authors>
+    <NoPackageAnalysis>true</NoPackageAnalysis>
+    <EnableGlobbing>false</EnableGlobbing>
+    <IncludeCommonReferences>true</IncludeCommonReferences>
+  </PropertyGroup>
+
+  <Import Project="Sdk.props" Sdk="Microsoft.NET.Sdk" />
+
+
+
+  <PropertyGroup>
+    <TargetFramework>net471</TargetFramework>
+    <OutputType>Library</OutputType>
+    <RootNamespace>System</RootNamespace>
+    <AssemblyName>Roslyn.TextUtilities</AssemblyName>
+  </PropertyGroup>
+
+<ItemDefinitionGroup>
+  <None>
+    <Pack>true</Pack>
+    <PackagePath>src\</PackagePath>
+    <Visible>false</Visible>
+  </None>
+</ItemDefinitionGroup>
+
+  <ItemGroup>
+    <Compile Include="ArrayBuilder.cs" />
+    <Compile Include="ArrayBuilder.Enumerator.cs" />
+    <Compile Include="ObjectPool`1.cs" />
+    <Compile Include="PooledDictionary.cs" />
+    <Compile Include="PooledHashSet.cs" />
+    <Compile Include="PooledStringBuilder.cs" />
+    <Compile Include="Text\ArrayExtensions.cs" />
+    <Compile Include="Text\ChangedText.cs" />
+    <Compile Include="Text\CompositeText.cs" />
+    <Compile Include="Text\CryptographicHashProvider.cs" />
+    <Compile Include="Text\EncodingExtensions.cs" />
+    <Compile Include="Text\ExceptionUtilities.cs" />
+    <Compile Include="Text\Hash.cs" />
+    <Compile Include="Text\LargeText.cs" />
+    <Compile Include="Text\LargeTextWriter.cs" />
+    <Compile Include="Text\LinePosition.cs" />
+    <Compile Include="Text\LinePositionSpan.cs" />
+    <Compile Include="Text\MetadataStringDecoder.cs" />
+    <Compile Include="Text\SlidingTextWindow.cs" />
+    <Compile Include="Text\SourceHashAlgorithm.cs" />
+    <Compile Include="Text\SourceText.cs" />
+    <Compile Include="Text\SourceTextContainer.cs" />
+    <Compile Include="Text\SourceTextStream.cs" />
+    <Compile Include="Text\SourceTextWriter.cs" />
+    <Compile Include="Text\StreamExtensions.cs" />
+    <Compile Include="Text\StringBuilderText.cs" />
+    <Compile Include="Text\StringTable.cs" />
+    <Compile Include="Text\StringText.cs" />
+    <Compile Include="Text\StringTextWriter.cs" />
+    <Compile Include="Text\SubText.cs" />
+    <Compile Include="Text\TextChange.cs" />
+    <Compile Include="Text\TextChangeEventArgs.cs" />
+    <Compile Include="Text\TextChangeRange.cs" />
+    <Compile Include="Text\TextLine.cs" />
+    <Compile Include="Text\TextLineCollection.cs" />
+    <Compile Include="Text\TextSpan.cs" />
+    <Compile Include="Text\TextUtilities.cs" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <None Include="@(Compile)" />
+    <None Include="$(MSBuildProjectFile)" Visible="False" />
+    <!--<PackageReference Include="System.Collections.Immutable" />-->
+    <PackageReference Include="System.Reflection.Metadata" />
+  </ItemGroup>
+
+
+  <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
+
+
+
+
+
+</Project>
