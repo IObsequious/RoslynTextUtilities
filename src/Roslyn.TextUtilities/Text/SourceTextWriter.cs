@@ -8,7 +8,7 @@ using System.IO;
 
 namespace System.Text
 {
-    internal abstract class SourceTextWriter : TextWriter
+    public abstract class SourceTextWriter : TextWriter
     {
         public abstract SourceText ToSourceText();
 

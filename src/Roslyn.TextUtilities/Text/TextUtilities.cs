@@ -8,6 +8,9 @@ using System;
 using System;
 using System;
 using System;
+using System.Collections.Generic;
+using System.Dynamic;
+using System.Globalization;
 
 namespace System.Text
 {
@@ -16,6 +19,67 @@ namespace System.Text
     /// </summary>
     public static class TextUtilities
     {
+        /// <summary>
+        /// Windows-1252 Encoding
+        /// </summary>
+        public static Encoding Windows1252Encoding { get; } = Encoding.GetEncoding("windows-1252");
+
+        public static byte[] ConvertToBytes(char[] charArray)
+        {
+            return ConvertToBytes(new string(charArray));
+        }
+        
+        /// <summary>
+        /// Converts a byte array into a string. Uses windows-1252 encoding.
+        /// </summary>
+        /// <param name="bytes"></param>
+        /// <returns></returns>
+        public static string ConvertToString(byte[] bytes)
+        {
+            return Windows1252Encoding.GetString(bytes);
+        }
+
+        public static byte[] ConvertToBytes(string text)
+        {
+            return Windows1252Encoding.GetBytes(text);
+        }
+        public static string GetValueText(string text)
+        {
+            string middle = GetMiddleText(text);
+            if (middle.Length > 1)
+            {
+                if (middle.StartsWith("\\u", StringComparison.CurrentCultureIgnoreCase)
+                    || middle.StartsWith("\\x", StringComparison.CurrentCultureIgnoreCase))
+                {
+                    string subText = middle.Substring(2);
+                    int hex = int.Parse(subText, NumberStyles.HexNumber);
+                    char ch = Convert.ToChar(hex);
+                    return ch.ToString();
+                }
+            }
+
+            return middle;
+        }
+
+        private static string GetMiddleText(string text)
+        {
+            if (StartsAndEndsWith(text, '\'', out int sEnd))
+            {
+                return text.Substring(1, sEnd);
+            }
+
+            return StartsAndEndsWith(text, '"', out int dEnd) ? text.Substring(1, dEnd) : text;
+        }
+
+        private static bool StartsAndEndsWith(string text, char ch, out int end)
+        {
+            end = text.Length - 1;
+            char startChar = text[0];
+            char endChar = text[end];
+            end--;
+            return ch == startChar && ch == endChar;
+        }
+
         // Note: a small amount of this below logic is also inlined into SourceText.ParseLineBreaks
         // for performance reasons.
         public static int GetLengthOfLineBreak(SourceText text, int index)

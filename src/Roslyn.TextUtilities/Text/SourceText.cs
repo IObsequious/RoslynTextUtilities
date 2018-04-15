@@ -31,7 +31,7 @@ namespace System.Text
     {
         private const int CharBufferSize = 32 * 1024;
         private const int CharBufferCount = 5;
-        internal const int LargeObjectHeapLimitInChars = 40 * 1024; // 40KB
+        public const int LargeObjectHeapLimitInChars = 40 * 1024; // 40KB
         private static readonly ObjectPool<char[]>
             s_charArrayPool = new ObjectPool<char[]>(() => new char[CharBufferSize], CharBufferCount);
         private SourceTextContainer _lazyContainer;
@@ -105,6 +105,14 @@ namespace System.Text
             }
 
             return new StringText(text, encoding, checksumAlgorithm: checksumAlgorithm);
+        }
+
+        public static SourceText From(
+            TextReader reader,
+            Encoding encoding = null,
+            SourceHashAlgorithm checksumAlgorithm = SourceHashAlgorithm.Sha1)
+        {
+            return From(reader.ReadToEnd(), encoding ?? Encoding.GetEncoding("utf-16"), checksumAlgorithm);
         }
 
         /// <summary>

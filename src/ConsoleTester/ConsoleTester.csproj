@@ -10,11 +10,16 @@
 
   <PropertyGroup>
     <TargetFramework>net471</TargetFramework>
-    <OutputType>Library</OutputType>
+    <OutputType>Exe</OutputType>
     <RootNamespace>ConsoleTester</RootNamespace>
     <AssemblyName>ConsoleTester</AssemblyName>
   </PropertyGroup>
 
 
   <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
+
+
+  <ItemGroup>
+    <ProjectReference Include="..\Roslyn.TextUtilities\Roslyn.TextUtilities.csproj" />
+  </ItemGroup>
 </Project>

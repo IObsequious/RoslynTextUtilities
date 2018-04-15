@@ -5,17 +5,11 @@
 // -----------------------------------------------------------------------
 
 using System;
-using System;
-using System;
-using System;
-using System.Collections.Generic;
-using System.Collections.Generic;
-using System.Collections.Generic;
 using System.Collections.Generic;
 
 namespace System.Text
 {
-    internal static class Hash
+    public static class Hash
     {
         /// <summary>
         /// This is how VB Anonymous Types combine hash values for fields.
@@ -24,7 +18,7 @@ namespace System.Text
         /// <param name="currentKey"></param>
         public static int Combine(int newKey, int currentKey)
         {
-            return unchecked(currentKey * (int)0xA5555529 + newKey);
+            return unchecked((currentKey * (int)0xA5555529) + newKey);
         }
 
         public static int Combine(bool newKeyPart, int currentKey)
@@ -66,7 +60,7 @@ namespace System.Text
                 T value = values[i];
 
                 // Should end up with a constrained virtual call to object.GetHashCode (i.e. avoid boxing where possible).
-                if (value != null)
+                if (!EqualityComparer<T>.Default.Equals(value, default(T)))
                 {
                     hashCode = Combine(value.GetHashCode(), hashCode);
                 }
@@ -100,7 +94,6 @@ namespace System.Text
 
         //    return hashCode;
         //}
-
 
         /// <summary>
         /// The offset bias value used in the FNV-1a algorithm

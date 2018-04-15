@@ -135,8 +135,8 @@ Copyright (c) Ollon, LLC. All rights reserved.
     <VisualStudioVersionMinor Condition="'$(VisualStudioVersionMinor)' == ''">5</VisualStudioVersionMinor>
     <BuildNumber>0</BuildNumber>
     <RevisionNumber>0</RevisionNumber>
-    <BuildVersion>1.0.0.0</BuildVersion>
-    <AssemblyBuildVersion Condition="'$(AssemblyBuildVersion)'==''">1.0.0.0</AssemblyBuildVersion>
+    <BuildVersion>1.2.0.0</BuildVersion>
+    <AssemblyBuildVersion Condition="'$(AssemblyBuildVersion)'==''">$(BuildVersion)</AssemblyBuildVersion>
   </PropertyGroup>
 
   <!--            -->

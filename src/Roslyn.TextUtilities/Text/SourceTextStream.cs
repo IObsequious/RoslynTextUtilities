@@ -16,7 +16,7 @@ namespace System.Text
     /// <summary>
     /// A read-only, non-seekable <see cref="Stream"/> over a <see cref="SourceText"/>.
     /// </summary>
-    internal sealed class SourceTextStream : Stream
+    public sealed class SourceTextStream : Stream
     {
         private readonly SourceText _source;
         private readonly Encoding _encoding;

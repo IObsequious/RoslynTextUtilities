@@ -38,11 +38,13 @@
     <Compile Include="PooledStringBuilder.cs" />
     <Compile Include="Text\ArrayExtensions.cs" />
     <Compile Include="Text\ChangedText.cs" />
+    <Compile Include="Text\CharStream.cs" />
     <Compile Include="Text\CompositeText.cs" />
     <Compile Include="Text\CryptographicHashProvider.cs" />
     <Compile Include="Text\EncodingExtensions.cs" />
     <Compile Include="Text\ExceptionUtilities.cs" />
     <Compile Include="Text\Hash.cs" />
+    <Compile Include="Text\IStream`1.cs" />
     <Compile Include="Text\LargeText.cs" />
     <Compile Include="Text\LargeTextWriter.cs" />
     <Compile Include="Text\LinePosition.cs" />
@@ -66,11 +68,51 @@
     <Compile Include="Text\TextLine.cs" />
     <Compile Include="Text\TextLineCollection.cs" />
     <Compile Include="Text\TextSpan.cs" />
+    <Compile Include="Text\TextStream.cs" />
     <Compile Include="Text\TextUtilities.cs" />
   </ItemGroup>
   
   <ItemGroup>
-    <None Include="@(Compile)" />
+    <None Include="ArrayBuilder.cs" />
+    <None Include="ArrayBuilder.Enumerator.cs" />
+    <None Include="ObjectPool`1.cs" />
+    <None Include="PooledDictionary.cs" />
+    <None Include="PooledHashSet.cs" />
+    <None Include="PooledStringBuilder.cs" />
+    <None Include="Text\ArrayExtensions.cs" />
+    <None Include="Text\ChangedText.cs" />
+    <None Include="Text\CharStream.cs" />
+    <None Include="Text\CompositeText.cs" />
+    <None Include="Text\CryptographicHashProvider.cs" />
+    <None Include="Text\EncodingExtensions.cs" />
+    <None Include="Text\ExceptionUtilities.cs" />
+    <None Include="Text\Hash.cs" />
+    <None Include="Text\IStream`1.cs" />
+    <None Include="Text\LargeText.cs" />
+    <None Include="Text\LargeTextWriter.cs" />
+    <None Include="Text\LinePosition.cs" />
+    <None Include="Text\LinePositionSpan.cs" />
+    <None Include="Text\MetadataStringDecoder.cs" />
+    <None Include="Text\SlidingTextWindow.cs" />
+    <None Include="Text\SourceHashAlgorithm.cs" />
+    <None Include="Text\SourceText.cs" />
+    <None Include="Text\SourceTextContainer.cs" />
+    <None Include="Text\SourceTextStream.cs" />
+    <None Include="Text\SourceTextWriter.cs" />
+    <None Include="Text\StreamExtensions.cs" />
+    <None Include="Text\StringBuilderText.cs" />
+    <None Include="Text\StringTable.cs" />
+    <None Include="Text\StringText.cs" />
+    <None Include="Text\StringTextWriter.cs" />
+    <None Include="Text\SubText.cs" />
+    <None Include="Text\TextChange.cs" />
+    <None Include="Text\TextChangeEventArgs.cs" />
+    <None Include="Text\TextChangeRange.cs" />
+    <None Include="Text\TextLine.cs" />
+    <None Include="Text\TextLineCollection.cs" />
+    <None Include="Text\TextSpan.cs" />
+    <None Include="Text\TextStream.cs" />
+    <None Include="Text\TextUtilities.cs" />
     <None Include="$(MSBuildProjectFile)" Visible="False" />
     <!--<PackageReference Include="System.Collections.Immutable" />-->
     <PackageReference Include="System.Reflection.Metadata" />
