@@ -2,6 +2,8 @@
 <Project>
   <!--Implicit Package References-->
   <ItemGroup>
+    <PackageVersion Include="System.Memory" Version="4.5.0-rc1" />
+    <PackageVersion Include="Microsoft.Build.Runtime" Version="15.7.0-preview-000145" />
     <PackageVersion Include="System.Reflection.Metadata" Version="[1.5.0]" />
     <PackageVersion Include="Microsoft.VSSDK.BuildTools" Version="[15.6.170]" />
     <PackageVersion Include="stdole" Version="[7.0.3302]" />
@@ -65,7 +67,7 @@
     <PackageVersion Include="Microsoft.CodeAnalysis" Version="[2.7.0]" />
     <PackageVersion Include="Microsoft.CodeAnalysis.CSharp" Version="[2.7.0]" />
     <PackageVersion Include="Microsoft.CodeAnalysis.Workspaces" Version="[1.0.0-beta1-20141031-01]" />
-    <PackageVersion Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="[2.7.0]" />
+    <PackageVersion Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="2.7.0" />
     <PackageVersion Include="Microsoft.CodeAnalysis.EditorFeatures" Version="[2.7.0]" />
     <PackageVersion Include="Microsoft.CodeAnalysis.EditorFeatures.Text" Version="[2.7.0]" />
     <PackageVersion Include="Microsoft.CodeAnalysis.Scripting" Version="[2.7.0]" />

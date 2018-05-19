@@ -76,6 +76,8 @@ Copyright (c) Ollon, LLC. All rights reserved.
     <DebugSymbols>true</DebugSymbols>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <AssemblyName Condition="'$(AssemblyName)' == ''">$(MSBuildProjectName)</AssemblyName>
+    
+    <DefineConstants>COMPILERCORE;DEBUG</DefineConstants>
 
     <ForceGenerationOfBindingRedirects Condition="'$(GenerateMSBuildBindingRedirects)' != ''">true</ForceGenerationOfBindingRedirects>
     <AutoGenerateBindingRedirects Condition="'$(ForceGenerationOfBindingRedirects)' == 'true'">true</AutoGenerateBindingRedirects>

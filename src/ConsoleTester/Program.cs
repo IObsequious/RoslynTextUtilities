@@ -2,59 +2,96 @@
 using System.IO;
 using System.Collections;
 using System.Collections.Generic;
+using System.Collections.Immutable;
+using System.Diagnostics;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
+using ConsoleTester.Refactoring;
+using ConsoleTester.Scratch;
+using Microsoft.Build.Utilities;
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Microsoft.CodeAnalysis.Editing;
+using Microsoft.CodeAnalysis.Formatting;
+using Microsoft.CodeAnalysis.MSBuild;
+using Microsoft.CodeAnalysis.Text;
+using Microsoft.CodeAnalysis.VisualBasic.Syntax;
+using Microsoft.VisualStudio.Threading;
 
 namespace ConsoleTester
 {
     internal static class Program
     {
+        private const string DirectoryPath = @"C:\Stage\git\RoslynTextUtilities\src\Roslyn.Utilities\Syntax\";
+
+        private static ConsoleWorkspace Workspace = new ConsoleWorkspace();
         public static void Main()
         {
             ModeConCols();
+            FileInfo info = new FileInfo(@"C:\Stage\git\PowerShellModules\src\Infrastructure\Resources\Class1.cs");
 
-            //const string example = "'\\x28'";
+            Document document = Workspace.CreateDocument(info.Name, File.ReadAllText(info.FullName), info.FullName);
 
-            //string value = TextUtilities.GetValueText(example);
+            JoinableTaskContext context = new JoinableTaskContext(Thread.CurrentThread);
+            JoinableTaskFactory factory = new JoinableTaskFactory(context);
 
-            //Console.WriteLine();
-            //Console.WriteLine($"Converting {example} to value {value}");
-            //Console.WriteLine();
+            document = factory.Run(async () => await Refactory.FixAsync(document));
 
-            string text = "Line1\r\nLine2\r\n\u03B5";
+            SourceText text = factory.Run(async () => await document.GetTextAsync(CancellationToken.None));
 
-            byte[] bytes = Encoding.GetEncoding("windows-1252").GetBytes(text);
+            Console.WriteLine(text.ToString());
 
-            CharStream stream = new CharStream();
+            ViewFile(text);
 
-            //stream.Write(bytes, 0, bytes.Length);
-            //stream.Seek(0, SeekOrigin.Begin);
+            // PressAnyKey();
+        }
 
-            SourceTextWriter writer = SourceTextWriter.Create(Encoding.GetEncoding("windows-1252"), SourceHashAlgorithm.Sha1, int.MaxValue);
+        private static void ViewFile(SyntaxNode newRoot)
+        {
+            string text = newRoot.ToFullString();
 
-            writer.Write("Line1");
+            var path = Path.GetTempFileName();
+            File.WriteAllText(path, text);
 
-            string value = writer.ToSourceText().ToString();
+            Process.Start("notepad.exe", path).WaitForExit();
 
-            //char c0 = stream.ReadChar();
-            //char c1 = stream.ReadChar();
-            //char c2 = stream.ReadChar();
-            //char c3 = stream.ReadChar();
-            //char c4 = stream.ReadChar();
-            //char c5 = stream.ReadChar();
-            //char c6 = stream.ReadChar();
-            //char c7 = stream.ReadChar();
+            File.Delete(path);
+        }
+        private static void ViewFile(SourceText sourceText)
+        {
+            string text = sourceText.ToString();
 
-            //char c1 = (char)reader.Read();
-            //char c2 = (char)reader.Read();
-            //char c3 = (char)reader.Read();
-            //char c4 = (char)reader.Read();
-            //char c5 = (char)reader.Read();
-            //char c6 = (char)reader.Read();
-            //char c7 = (char)reader.Read();
+            var path = Path.GetTempFileName();
+            File.WriteAllText(path, text);
 
-            PressAnyKey();
+            Process.Start("notepad.exe", path).WaitForExit();
+
+            File.Delete(path);
+        }
+
+        private static ImmutableArray<Document> GetFilesAndContent()
+        {
+            ImmutableArray<Document>.Builder builder = ImmutableArray.CreateBuilder<Document>();
+
+            foreach (FileInfo info in GetFiles())
+            {
+                Document document = Workspace.CreateDocument(info.Name, File.ReadAllText(info.FullName), info.FullName);
+                
+                builder.Add(document);
+            }
+
+            return builder.ToImmutable();
+        }
+
+        private static IEnumerable<FileInfo> GetFiles()
+        {
+            DirectoryInfo directoryInfo = new DirectoryInfo(DirectoryPath);
+
+            return directoryInfo.GetFiles("*.cs", SearchOption.AllDirectories);
         }
 
         private static void PressAnyKey()

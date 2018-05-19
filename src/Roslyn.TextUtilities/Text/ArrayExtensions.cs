@@ -12,7 +12,7 @@ using System.Diagnostics;
 
 namespace System.Text
 {
-    internal static class ArrayExtensions
+    public static class ArrayExtensions
     {
         public static T[] Copy<T>(this T[] array, int start, int length)
         {

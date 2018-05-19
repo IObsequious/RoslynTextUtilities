@@ -14,12 +14,16 @@
     <RootNamespace>ConsoleTester</RootNamespace>
     <AssemblyName>ConsoleTester</AssemblyName>
   </PropertyGroup>
+  
+  <ItemGroup>
+    <PackageReference Include="Microsoft.VisualStudio.Threading" />
+    <PackageReference Include="Microsoft.Build.Runtime" />
+    <PackageReference Include="Microsoft.VisualStudio.LanguageServices" />
+  </ItemGroup>
 
 
   <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
 
 
-  <ItemGroup>
-    <ProjectReference Include="..\Roslyn.TextUtilities\Roslyn.TextUtilities.csproj" />
-  </ItemGroup>
+
 </Project>

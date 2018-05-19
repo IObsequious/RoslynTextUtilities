@@ -271,65 +271,6 @@ Copyright (c) Ollon, LLC. All rights reserved.
     </Reference>-->
   </ItemGroup>
 
-  <Choose>
-    <When Condition="
-             '$(MSBuildProjectName)' == 'Microsoft.VisualStudio.Extensibility.EditorMargin'
-          or '$(MSBuildProjectName)' == 'Microsoft.VisualStudio.Extensibility.PasteAsCommands'
-          or '$(MSBuildProjectName)' == 'Microsoft.VisualStudio.Extensibility.TemplateWizards'
-          or '$(MSBuildProjectName)' == 'Microsoft.VisualStudio.Extensibility.OpenOutput'
-          ">
-      <ItemGroup>
-        <PackageReference Include="EnvDTE" />
-        <PackageReference Include="EnvDTE80" />
-        <PackageReference Include="stdole" />
-        <Reference Include="Microsoft.VisualStudio.CommandBars" />
-        <PackageReference Include="Microsoft.VisualStudio.ComponentModelHost"  />
-        <PackageReference Include="Microsoft.VisualStudio.Shell.15.0" />
-        <PackageReference Include="Microsoft.VisualStudio.Shell.Embeddable" />
-        <PackageReference Include="Microsoft.VisualStudio.Shell.Design" />
-        <PackageReference Include="Microsoft.VisualStudio.Shell.Framework" />
-        <PackageReference Include="Microsoft.VisualStudio.OLE.Interop" />
-        <PackageReference Include="Microsoft.VisualStudio.Shell.Interop" />
-        <PackageReference Include="Microsoft.VisualStudio.Shell.Interop.8.0" />
-        <PackageReference Include="Microsoft.VisualStudio.Shell.Interop.9.0" />
-        <PackageReference Include="Microsoft.VisualStudio.Shell.Interop.10.0" />
-        <PackageReference Include="Microsoft.VisualStudio.Shell.Interop.11.0" />
-        <PackageReference Include="Microsoft.VisualStudio.Shell.Interop.12.0" />
-        <PackageReference Include="Microsoft.VisualStudio.CoreUtility" />
-        <PackageReference Include="Microsoft.VisualStudio.Threading" />
-        <PackageReference Include="Microsoft.VisualStudio.Validation" />
-        <PackageReference Include="Microsoft.VisualStudio.Text.Data" />
-        <PackageReference Include="Microsoft.VisualStudio.Text.Logic" />
-        <PackageReference Include="Microsoft.VisualStudio.Text.UI" />
-        <PackageReference Include="Microsoft.VisualStudio.Text.UI.Wpf" />
-        <PackageReference Include="Microsoft.VisualStudio.TextManager.Interop" />
-        <PackageReference Include="Microsoft.VisualStudio.TextManager.Interop.8.0" />
-      </ItemGroup>
-    </When>
-  </Choose>
-
-  <Choose>
-    <When Condition="'$(MSBuildProjectName)' == 'Microsoft.VisualStudio.Extensibility.OpenOutput'">
-      <ItemGroup>
-        <Reference Include="Microsoft.Build" />
-        <Reference Include="Microsoft.Build.Framework" />
-        <PackageReference Include="Microsoft.Tpl.Dataflow"/>
-        <PackageReference Include="Microsoft.VisualStudio.ProjectSystem"  />
-        <!--<PackageReference Include="Microsoft.VisualStudio.ProjectSystem.VS" />-->
-        <PackageReference Include="Microsoft.VisualStudio.Composition" />
-        <PackageReference Include="Microsoft.VisualStudio.Composition.Configuration" />
-      </ItemGroup>
-    </When>
-  </Choose>
-
-  <Choose>
-    <When Condition="'$(MSBuildProjectName)' == 'Microsoft.VisualStudio.Extensibility.TemplateWizards'">
-      <ItemGroup>
-        <Reference Include="Microsoft.VisualStudio.TemplateWizardInterface"  />
-      </ItemGroup>
-    </When>
-  </Choose>
-
   <Import Project="$(CustomBeforeCentralPackageVersionsTargets)" Condition=" '$(CustomBeforeCentralPackageVersionsTargets)' != '' And Exists('$(CustomBeforeCentralPackageVersionsTargets)') " />
   <PropertyGroup Condition=" '$(EnableCentralPackageVersions)' != 'false' ">
     <CentralPackagesFile Condition=" '$(CentralPackagesFile)' == '' ">$([MSBuild]::GetPathOfFileAbove('Packages.props', $(MSBuildProjectDirectory)))</CentralPackagesFile>

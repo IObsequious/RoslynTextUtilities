@@ -1,0 +1,28 @@
+using System.Collections.Generic;
+
+namespace Roslyn.Utilities
+{
+    public sealed class StringOrdinalComparer : IEqualityComparer<string>
+    {
+        public static readonly StringOrdinalComparer Instance = new StringOrdinalComparer();
+
+        private StringOrdinalComparer()
+        {
+        }
+
+        bool IEqualityComparer<string>.Equals(string a, string b)
+        {
+            return Equals(a, b);
+        }
+
+        public static bool Equals(string a, string b)
+        {
+            return string.Equals(a, b);
+        }
+
+        int IEqualityComparer<string>.GetHashCode(string s)
+        {
+            return Hash.GetFNVHashCode(s);
+        }
+    }
+}
