@@ -6,8 +6,8 @@
     <Authors>Brad R. Marshall, Microsoft</Authors>
     <NoPackageAnalysis>true</NoPackageAnalysis>
     <LangVersion>7.2</LangVersion>
-    <DefineConstants>$(DefineConstants);COMPILERCORE</DefineConstants>
-    <EnableGlobbing>false</EnableGlobbing>
+    <DefineConstants>COMPILERCORE;DEBUG</DefineConstants>
+    <EnableGlobbing>true</EnableGlobbing>
     <IncludeCommonReferences>true</IncludeCommonReferences>
   </PropertyGroup>
   <Import Project="Sdk.props" Sdk="Microsoft.NET.Sdk" />
@@ -17,28 +17,16 @@
     <RootNamespace>Roslyn</RootNamespace>
     <AssemblyName>Roslyn.Utilities</AssemblyName>
   </PropertyGroup>
-    <ItemGroup>
-    <Compile Include="**\*.cs" Exclude="CodeAnalysisResources.Designer.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="CodeAnalysisResources.Designer.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>CodeAnalysisResources.resx</DependentUpon>
-    </Compile>
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="CodeAnalysisResources.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <CustomToolNamespace>Roslyn.Utilities</CustomToolNamespace>
-    </EmbeddedResource>
-  </ItemGroup>
+  
 
+  <ItemGroup>
+    <None Visible="false" Include="**\*.*" Exclude="*.user;*.DotSettings" Pack="true" PackagePath="src\%(RecursiveDir)%(Filename)%(Extension)" />
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="System.Reflection.Metadata" />
   </ItemGroup>
-  <ItemGroup>
+  <!--<ItemGroup>
     <None Visible="false" Include="Roslyn.Utilities.csproj" Pack="true" PackagePath="src\" />
     <None Visible="false" Include="CodeAnalysisResources.resx" Pack="true" PackagePath="src\" />
     <None Include="Collections\ArrayBuilderExtensions.cs">
@@ -829,6 +817,6 @@
       <Pack>true</Pack>
       <PackagePath>src\</PackagePath>
     </None>
-  </ItemGroup>
+  </ItemGroup>-->
   <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
 </Project>
