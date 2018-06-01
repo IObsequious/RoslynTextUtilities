@@ -35,7 +35,7 @@ namespace Roslyn.Utilities
             return result;
         }
 
-        internal static string EncodeHexStringFromInt(byte[] sArray)
+        public static string EncodeHexStringFromInt(byte[] sArray)
         {
             string result = null;
             if (sArray != null)

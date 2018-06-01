@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Diagnostics;
 
 namespace Roslyn.Utilities
@@ -14,7 +14,7 @@ namespace Roslyn.Utilities
             return new InvalidOperationException(output);
         }
 
-        internal static Exception Unreachable
+        public static Exception Unreachable
         {
             get
             {
