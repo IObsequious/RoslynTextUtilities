@@ -224,7 +224,7 @@ namespace Microsoft.CodeAnalysis
             }
         }
 
-        public bool IntersectWith(in BitVector other)
+        public bool IntersectWith(BitVector other)
         {
             bool anyChanged = false;
             int otherLength = other._bits.Length;
@@ -268,7 +268,7 @@ namespace Microsoft.CodeAnalysis
             return anyChanged;
         }
 
-        public bool UnionWith(in BitVector other)
+        public bool UnionWith( BitVector other)
         {
             bool anyChanged = false;
             if (other._capacity > _capacity)

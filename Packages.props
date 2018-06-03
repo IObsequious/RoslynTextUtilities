@@ -2,6 +2,7 @@
 <Project>
   <!--Implicit Package References-->
   <ItemGroup>
+    <PackageVersion Include="PublicApiAnalyzer" Version="[1.0.0-beta001]"/>
     <PackageVersion Include="System.Memory" Version="4.5.0-rc1" />
     <PackageVersion Include="Microsoft.Build.Runtime" Version="15.7.0-preview-000145" />
     <PackageVersion Include="System.Reflection.Metadata" Version="[1.5.0]" />
@@ -92,5 +93,7 @@
     <PackageVersion Include="Microsoft.VisualStudio.WCFReference.Interop" Version="[9.0.30730]" />
     <PackageVersion Include="Newtonsoft.Json" Version="[11.0.1]" />
   </ItemGroup>
+
+
 
 </Project>

@@ -19,7 +19,7 @@ namespace Roslyn.Utilities
 
             internal Enumerator(ConsList<T> list)
             {
-                _current = default;
+                _current = default(T);
                 _tail = list;
             }
 
@@ -43,7 +43,7 @@ namespace Roslyn.Utilities
                     return true;
                 }
 
-                _current = default;
+                _current = default(T);
                 return false;
             }
 
@@ -67,7 +67,7 @@ namespace Roslyn.Utilities
 
         private ConsList()
         {
-            _head = default;
+            _head = default(T);
             _tail = null;
         }
 

@@ -91,7 +91,7 @@ namespace Microsoft.CodeAnalysis.PooledObjects
         {
             while (index > _builder.Count)
             {
-                _builder.Add(default);
+                _builder.Add(default(T));
             }
 
             if (index == _builder.Count)
@@ -235,7 +235,7 @@ namespace Microsoft.CodeAnalysis.PooledObjects
         {
             if (Count == 0)
             {
-                return default;
+                return default(ImmutableArray<T>);
             }
 
             return ToImmutable();

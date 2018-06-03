@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Reflection;
@@ -97,7 +97,7 @@ namespace Roslyn.Utilities
         {
             if (methodInfo == null)
             {
-                return default;
+                return default(T);
             }
 
             return (T) (object) methodInfo.CreateDelegate(typeof(T));
@@ -107,7 +107,7 @@ namespace Roslyn.Utilities
         {
             if (constructorInfo == null)
             {
-                return default;
+                return default(T);
             }
 
             try
@@ -118,7 +118,7 @@ namespace Roslyn.Utilities
             {
                 ExceptionDispatchInfo.Capture(e.InnerException).Throw();
                 Debug.Assert(false, message: "Unreachable");
-                return default;
+                return default(T);
             }
         }
 

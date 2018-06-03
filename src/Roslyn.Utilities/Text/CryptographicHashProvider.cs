@@ -121,7 +121,7 @@ namespace System.Text
         {
             if (lazyHash.IsDefault)
             {
-                ImmutableInterlocked.InterlockedCompareExchange(ref lazyHash, ComputeHash(algorithm), default);
+                ImmutableInterlocked.InterlockedCompareExchange(ref lazyHash, ComputeHash(algorithm), default(ImmutableArray<byte>));
             }
 
             return lazyHash;

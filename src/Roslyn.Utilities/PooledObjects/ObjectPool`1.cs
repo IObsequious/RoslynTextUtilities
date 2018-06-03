@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Diagnostics;
 using System.Threading;
 
@@ -17,7 +17,7 @@ namespace Microsoft.CodeAnalysis.PooledObjects
             internal T Value;
         }
 
-        internal delegate T Factory();
+        public delegate T Factory();
 
         private T _firstItem;
         private readonly Element[] _items;
@@ -63,12 +63,12 @@ namespace Microsoft.CodeAnalysis.PooledObjects
         }
 #endif
 
-        internal ObjectPool(Factory factory)
+        public ObjectPool(Factory factory)
             : this(factory, Environment.ProcessorCount * 2)
         {
         }
 
-        internal ObjectPool(Factory factory, int size)
+        public ObjectPool(Factory factory, int size)
         {
             Debug.Assert(size >= 1);
             _factory = factory;

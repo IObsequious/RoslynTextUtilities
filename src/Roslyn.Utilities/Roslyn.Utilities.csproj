@@ -12,19 +12,53 @@
   </PropertyGroup>
   <Import Project="Sdk.props" Sdk="Microsoft.NET.Sdk" />
   <PropertyGroup>
-    <TargetFramework>net471</TargetFramework>
+    <TargetFrameworks>net471</TargetFrameworks>
     <OutputType>Library</OutputType>
     <RootNamespace>Roslyn</RootNamespace>
     <AssemblyName>Roslyn.Utilities</AssemblyName>
   </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="PublicApiAnalyzer">
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+  </ItemGroup>
+
   
 
   <ItemGroup>
-    <None Visible="false" Include="**\*.*" Exclude="*.user;*.DotSettings" Pack="true" PackagePath="src\%(RecursiveDir)%(Filename)%(Extension)" />
+    <None Visible="false" Include="**\*.*" Exclude="*.user;*.DotSettings;*.txt" Pack="true" PackagePath="src\%(RecursiveDir)%(Filename)%(Extension)" />
+  </ItemGroup>
+  
+
+  <ItemGroup>
+    <None Remove="PublicAPI.Shipped.txt" />
+    <None Remove="PublicAPI.Unshipped.txt" />
+  </ItemGroup>
+
+
+  <ItemGroup>
+    <AdditionalFiles Include="PublicAPI.Shipped.txt" />
+    <AdditionalFiles Include="PublicAPI.Unshipped.txt" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="System.Reflection.Metadata" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="CodeAnalysisResources.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>CodeAnalysisResources.resx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Update="CodeAnalysisResources.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>CodeAnalysisResources.Designer.cs</LastGenOutput>
+      <CustomToolNamespace>Roslyn.Utilities</CustomToolNamespace>
+    </EmbeddedResource>
   </ItemGroup>
   <!--<ItemGroup>
     <None Visible="false" Include="Roslyn.Utilities.csproj" Pack="true" PackagePath="src\" />

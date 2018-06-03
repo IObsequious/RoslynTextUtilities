@@ -25,7 +25,7 @@ namespace Microsoft.CodeAnalysis.Text
         private ImmutableArray<byte> _precomputedEmbeddedTextBlob;
         private static readonly Encoding s_utf8EncodingWithNoBOM = new UTF8Encoding(false, false);
 
-        protected SourceText(ImmutableArray<byte> checksum = default,
+        protected SourceText(ImmutableArray<byte> checksum = default(ImmutableArray<byte>),
             SourceHashAlgorithm checksumAlgorithm = SourceHashAlgorithm.Sha1,
             SourceTextContainer container = null)
         {
@@ -201,7 +201,7 @@ namespace Microsoft.CodeAnalysis.Text
             // We cannot re-encode to obtain checksum and blob as the encoding is not guaranteed to round-trip.
             var checksum = CalculateChecksum(stream, checksumAlgorithm);
             //*ar embeddedTextBlob = canBeEmbedded ? EmbeddedText.CreateBlob(stream) : default;*/
-            return new StringText(text, encoding, checksum, checksumAlgorithm, default);
+            return new StringText(text, encoding, checksum, checksumAlgorithm, default(ImmutableArray<byte>));
         }
 
         // 1.0 BACKCOMPAT OVERLOAD - DO NOT TOUCH
@@ -263,7 +263,7 @@ namespace Microsoft.CodeAnalysis.Text
             // We cannot re-encode to obtain checksum and blob as the encoding is not guaranteed to round-trip.
             var checksum = CalculateChecksum(buffer, 0, length, checksumAlgorithm);
             //var embeddedTextBlob = canBeEmbedded ? EmbeddedText.CreateBlob(new ArraySegment<byte>(buffer, 0, length)) : default;
-            return new StringText(text, encoding, checksum, checksumAlgorithm, default);
+            return new StringText(text, encoding, checksum, checksumAlgorithm, default(ImmutableArray<byte>));
         }
 
         /// <summary>
@@ -520,7 +520,7 @@ namespace Microsoft.CodeAnalysis.Text
         /// </summary>
         /// <param name="textWriter"></param>
         /// <param name="cancellationToken"></param>
-        public void Write(TextWriter textWriter, CancellationToken cancellationToken = default)
+        public void Write(TextWriter textWriter, CancellationToken cancellationToken = default(CancellationToken))
         {
             Write(textWriter, new TextSpan(0, Length), cancellationToken);
         }
@@ -531,7 +531,7 @@ namespace Microsoft.CodeAnalysis.Text
         /// <param name="writer"></param>
         /// <param name="span"></param>
         /// <param name="cancellationToken"></param>
-        public virtual void Write(TextWriter writer, TextSpan span, CancellationToken cancellationToken = default)
+        public virtual void Write(TextWriter writer, TextSpan span, CancellationToken cancellationToken = default(CancellationToken))
         {
             CheckSubSpan(span);
             var buffer = s_charArrayPool.Allocate();

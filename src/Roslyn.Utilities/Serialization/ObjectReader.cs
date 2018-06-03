@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -41,7 +41,7 @@ namespace Roslyn.Utilities
 
         public static ObjectReader TryGetReader(
             Stream stream,
-            CancellationToken cancellationToken = default)
+            CancellationToken cancellationToken = default(CancellationToken))
         {
             if (stream == null)
             {

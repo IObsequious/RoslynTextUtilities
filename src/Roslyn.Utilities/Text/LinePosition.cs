@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using Roslyn.Utilities;
 
 namespace Microsoft.CodeAnalysis.Text
@@ -32,7 +32,7 @@ namespace Microsoft.CodeAnalysis.Text
             _character = character;
         }
 
-        internal LinePosition(int character)
+        public LinePosition(int character)
         {
             if (character < 0)
             {

@@ -5,7 +5,7 @@ namespace Microsoft.CodeAnalysis
     [DebuggerDisplay(value: "{Value,nq}")]
     public struct ArrayElement<T>
     {
-        internal T Value;
+        public T Value;
 
         public static implicit operator T(ArrayElement<T> element)
         {

@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 
@@ -154,7 +154,7 @@ namespace Microsoft.CodeAnalysis.InternalUtilities
                 return true;
             }
 
-            value = default;
+            value = default(V);
             return false;
         }
 

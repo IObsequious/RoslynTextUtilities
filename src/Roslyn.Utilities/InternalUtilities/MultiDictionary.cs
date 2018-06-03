@@ -20,8 +20,8 @@ namespace Roslyn.Utilities
                 {
                     if (v._value == null)
                     {
-                        _value = default;
-                        _values = default;
+                        _value = default(V);
+                        _values = default(ImmutableHashSet<V>.Enumerator);
                         _count = 0;
                     }
                     else
@@ -29,12 +29,12 @@ namespace Roslyn.Utilities
                         if (!(v._value is ImmutableHashSet<V> set))
                         {
                             _value = (V) v._value;
-                            _values = default;
+                            _values = default(ImmutableHashSet<V>.Enumerator);
                             _count = 1;
                         }
                         else
                         {
-                            _value = default;
+                            _value = default(V);
                             _values = set.GetEnumerator();
                             _count = set.Count;
                             Debug.Assert(_count > 1);
@@ -177,7 +177,7 @@ namespace Roslyn.Utilities
         {
             get
             {
-                return _dictionary.TryGetValue(k, out ValueSet set) ? set : default;
+                return _dictionary.TryGetValue(k, out ValueSet set) ? set : default(ValueSet);
             }
         }
 

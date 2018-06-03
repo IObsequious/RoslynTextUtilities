@@ -6,14 +6,14 @@ namespace Roslyn.Utilities
 {
     public static class SemaphoreSlimExtensions
     {
-        public static SemaphoreDisposer DisposableWait(this SemaphoreSlim semaphore, CancellationToken cancellationToken = default)
+        public static SemaphoreDisposer DisposableWait(this SemaphoreSlim semaphore, CancellationToken cancellationToken = default(CancellationToken))
         {
             semaphore.Wait(cancellationToken);
             return new SemaphoreDisposer(semaphore);
         }
 
         public static async Task<SemaphoreDisposer> DisposableWaitAsync(this SemaphoreSlim semaphore,
-            CancellationToken cancellationToken = default)
+            CancellationToken cancellationToken = default(CancellationToken))
         {
             await semaphore.WaitAsync(cancellationToken).ConfigureAwait(false);
             return new SemaphoreDisposer(semaphore);

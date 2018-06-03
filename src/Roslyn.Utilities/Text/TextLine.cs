@@ -1,19 +1,15 @@
-using System;
+﻿using System;
 using Roslyn.Utilities;
 
 namespace Microsoft.CodeAnalysis.Text
 {
     public struct TextLine : IEquatable<TextLine>
     {
-        private readonly SourceText _text;
-        private readonly int _start;
-        private readonly int _endIncludingBreaks;
-
         private TextLine(SourceText text, int start, int endIncludingBreaks)
         {
-            _text = text;
-            _start = start;
-            _endIncludingBreaks = endIncludingBreaks;
+            Text = text;
+            Start = start;
+            EndIncludingLineBreak = endIncludingBreaks;
         }
 
         public static TextLine FromSpan(SourceText text, TextSpan span)
@@ -62,35 +58,23 @@ namespace Microsoft.CodeAnalysis.Text
             return new TextLine(text, 0, 0);
         }
 
-        public SourceText Text
-        {
-            get
-            {
-                return _text;
-            }
-        }
+        public SourceText Text { get; }
 
         public int LineNumber
         {
             get
             {
-                return _text?.Lines.IndexOf(_start) ?? 0;
+                return Text?.Lines.IndexOf(Start) ?? 0;
             }
         }
 
-        public int Start
-        {
-            get
-            {
-                return _start;
-            }
-        }
+        public int Start { get; }
 
         public int End
         {
             get
             {
-                return _endIncludingBreaks - LineBreakLength;
+                return EndIncludingLineBreak - LineBreakLength;
             }
         }
 
@@ -98,25 +82,19 @@ namespace Microsoft.CodeAnalysis.Text
         {
             get
             {
-                if (_text == null || _text.Length == 0 || _endIncludingBreaks == _start)
+                if (Text == null || Text.Length == 0 || EndIncludingLineBreak == Start)
                 {
                     return 0;
                 }
 
                 int startLineBreak;
                 int lineBreakLength;
-                TextUtilities.GetStartAndLengthOfLineBreakEndingAt(_text, _endIncludingBreaks - 1, out startLineBreak, out lineBreakLength);
+                TextUtilities.GetStartAndLengthOfLineBreakEndingAt(Text, EndIncludingLineBreak - 1, out startLineBreak, out lineBreakLength);
                 return lineBreakLength;
             }
         }
 
-        public int EndIncludingLineBreak
-        {
-            get
-            {
-                return _endIncludingBreaks;
-            }
-        }
+        public int EndIncludingLineBreak { get; }
 
         public TextSpan Span
         {
@@ -136,12 +114,12 @@ namespace Microsoft.CodeAnalysis.Text
 
         public override string ToString()
         {
-            if (_text == null || _text.Length == 0)
+            if (Text == null || Text.Length == 0)
             {
                 return string.Empty;
             }
 
-            return _text.ToString(Span);
+            return Text.ToString(Span);
         }
 
         public static bool operator ==(TextLine left, TextLine right)
@@ -156,7 +134,7 @@ namespace Microsoft.CodeAnalysis.Text
 
         public bool Equals(TextLine other)
         {
-            return other._text == _text && other._start == _start && other._endIncludingBreaks == _endIncludingBreaks;
+            return other.Text == Text && other.Start == Start && other.EndIncludingLineBreak == EndIncludingLineBreak;
         }
 
         public override bool Equals(object obj)
@@ -171,7 +149,7 @@ namespace Microsoft.CodeAnalysis.Text
 
         public override int GetHashCode()
         {
-            return Hash.Combine(_text, Hash.Combine(_start, _endIncludingBreaks));
+            return Hash.Combine(Text, Hash.Combine(Start, EndIncludingLineBreak));
         }
     }
 }

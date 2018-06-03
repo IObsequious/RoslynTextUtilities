@@ -32,7 +32,7 @@ namespace Roslyn.Utilities
 
         public ObjectWriter(
             Stream stream,
-            CancellationToken cancellationToken = default)
+            CancellationToken cancellationToken = default(CancellationToken))
         {
             Debug.Assert(BitConverter.IsLittleEndian);
             _writer = new BinaryWriter(stream, Encoding.UTF8);

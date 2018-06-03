@@ -208,6 +208,27 @@ Copyright (c) Ollon, LLC. All rights reserved.
     <StartArguments>/rootsuffix Exp</StartArguments>
   </PropertyGroup>
 
+  <PropertyGroup>
+    <ModuleFolder>$(OutputPath)\$(AssemblyName)\</ModuleFolder>
+    <DestinationModuleManifest>$(ModuleFolder)$(AssemblyName).psd1</DestinationModuleManifest>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <CleanDependsOn>
+      $(CleanDependsOn);
+      SuperClean;
+    </CleanDependsOn>
+  </PropertyGroup>
+  
+  <Target Name="SuperClean">
+    <ItemGroup>
+      <RemoveFiles Include="$(OutputPath)\*.*" />
+    </ItemGroup>
+    <Message Text="------ SuperClean started: Project: $(MSBuildProjectName) Configuration: $(Configuration) $(Platform) ------" Importance="high" />
+    <RemoveDir Directories="$(ModuleFolder)" Condition="Exists('$(ModuleFolder)')" />
+    <Delete Files="@(RemoveFiles)" />
+  </Target>
+
   <Target Name="CreateDebuggableModule" AfterTargets="AfterBuild" Condition="'$(IsPowerShellProject)'=='true'">
     <PropertyGroup>
       <ModuleFolder>$(OutputPath)\$(AssemblyName)\</ModuleFolder>
@@ -232,44 +253,7 @@ Copyright (c) Ollon, LLC. All rights reserved.
     <WriteLinesToFile Lines="@(_ModuleManifestFileLines)" File="$(DestinationModuleManifest)" Overwrite="true" />
   </Target>
 
-  <ItemGroup>
-    <!--<Reference Include="System.Xaml">
-      <Private>false</Private>
-    </Reference>-->
-    <!--<Reference Include="WindowsBase">
-      <Private>false</Private>
-    </Reference>-->
-    <!--<Reference Include="PresentationCore">
-      <Private>false</Private>
-    </Reference>-->
-    <!--<Reference Include="PresentationFramework">
-      <Private>false</Private>
-    </Reference>-->
-    <Reference Include="System">
-      <Private>false</Private>
-    </Reference>
-    <!--<Reference Include="System.Xml">
-      <Private>false</Private>
-    </Reference>
-    <Reference Include="System.Xml.Linq">
-      <Private>false</Private>
-    </Reference>-->
-    <Reference Include="System.Core">
-      <Private>false</Private>
-    </Reference>
-    <!--<Reference Include="System.Drawing">
-      <Private>false</Private>
-    </Reference>
-    <Reference Include="System.Design">
-      <Private>false</Private>
-    </Reference>
-    <Reference Include="Microsoft.CSharp">
-      <Private>false</Private>
-    </Reference>
-    <Reference Include="System.ComponentModel.Composition">
-      <Private>false</Private>
-    </Reference>-->
-  </ItemGroup>
+
 
   <Import Project="$(CustomBeforeCentralPackageVersionsTargets)" Condition=" '$(CustomBeforeCentralPackageVersionsTargets)' != '' And Exists('$(CustomBeforeCentralPackageVersionsTargets)') " />
   <PropertyGroup Condition=" '$(EnableCentralPackageVersions)' != 'false' ">
@@ -344,6 +328,20 @@ Copyright (c) Ollon, LLC. All rights reserved.
       File="$(MSBuildProjectFullPath)" />
   </Target>
   <Import Project="$(CustomAfterCentralPackageVersionsTargets)" Condition=" '$(CustomAfterCentralPackageVersionsTargets)' != '' And Exists('$(CustomAfterCentralPackageVersionsTargets)') " />
+
+
+  <Choose>
+    <When Condition="'$(TargetFramework)'=='net471'">
+      <ItemGroup>
+        <Reference Include="System">
+          <Private>false</Private>
+        </Reference>
+        <Reference Include="System.Core">
+          <Private>false</Private>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
 
 
 </Project>

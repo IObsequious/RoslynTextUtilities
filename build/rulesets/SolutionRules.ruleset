@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <RuleSet Name="Solution Rules" Description="Solution Rules" ToolsVersion="15.0">
   <Include Path="extendedcorrectnessrules.ruleset" Action="Default" />
   <Include Path="extendeddesignguidelinerules.ruleset" Action="Default" />
@@ -256,4 +256,5 @@
     <Rule Id="RCS1174FadeOut" Action="None" />
     <Rule Id="RCS1182" Action="None" />
   </Rules>
+  <Rules AnalyzerId="PublicApiAnalyzer" RuleNamespace="PublicApiAnalyzer" />
 </RuleSet>
