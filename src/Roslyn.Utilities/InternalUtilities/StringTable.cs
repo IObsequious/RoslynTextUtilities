@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Diagnostics;
 using System.Text;
 using System.Threading;
@@ -29,7 +29,7 @@ namespace Roslyn.Utilities
         private int _localRandom = Environment.TickCount;
         private static int s_sharedRandom = Environment.TickCount;
 
-        internal StringTable() :
+        public StringTable() :
             this(null)
         {
         }

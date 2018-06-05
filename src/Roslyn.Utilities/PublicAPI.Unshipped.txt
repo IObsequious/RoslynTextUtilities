@@ -749,6 +749,7 @@ Roslyn.Utilities.StringTable.Add(char[] chars, int start, int len) -> string
 Roslyn.Utilities.StringTable.Add(string chars) -> string
 Roslyn.Utilities.StringTable.Add(string chars, int start, int len) -> string
 Roslyn.Utilities.StringTable.Free() -> void
+Roslyn.Utilities.StringTable.StringTable() -> void
 Roslyn.Utilities.TextChangeRangeExtensions
 Roslyn.Utilities.TextKeyedCache<T>
 Roslyn.Utilities.TextKeyedCache<T>.AddItem(char[] chars, int start, int len, int hashCode, T item) -> void

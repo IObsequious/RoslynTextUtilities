@@ -29,7 +29,7 @@ namespace Microsoft.CodeAnalysis
             ObjectBinder.RegisterTypeReader(typeof(DiagnosticInfo), r => new DiagnosticInfo(r));
         }
 
-        internal DiagnosticInfo(CommonMessageProvider messageProvider, int errorCode)
+        public DiagnosticInfo(CommonMessageProvider messageProvider, int errorCode)
         {
             _messageProvider = messageProvider;
             _errorCode = errorCode;
@@ -37,7 +37,7 @@ namespace Microsoft.CodeAnalysis
             _effectiveSeverity = _defaultSeverity;
         }
 
-        internal DiagnosticInfo(CommonMessageProvider messageProvider, int errorCode, params object[] arguments)
+        public DiagnosticInfo(CommonMessageProvider messageProvider, int errorCode, params object[] arguments)
             : this(messageProvider, errorCode)
         {
             _arguments = arguments;
@@ -90,7 +90,7 @@ namespace Microsoft.CodeAnalysis
         }
 
 
-        internal DiagnosticInfo(CommonMessageProvider messageProvider, bool isWarningAsError, int errorCode, params object[] arguments)
+        public DiagnosticInfo(CommonMessageProvider messageProvider, bool isWarningAsError, int errorCode, params object[] arguments)
             : this(messageProvider, errorCode, arguments)
         {
             Debug.Assert(!isWarningAsError || _defaultSeverity == DiagnosticSeverity.Warning);
