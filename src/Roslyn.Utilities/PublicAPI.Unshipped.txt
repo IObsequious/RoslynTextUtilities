@@ -1172,6 +1172,17 @@ static Microsoft.CodeAnalysis.Text.TextSpan.operator ==(Microsoft.CodeAnalysis.T
 static Microsoft.CodeAnalysis.Text.TextUtilities.GetLengthOfLineBreak(Microsoft.CodeAnalysis.Text.SourceText text, int index) -> int
 static Microsoft.CodeAnalysis.Text.TextUtilities.GetStartAndLengthOfLineBreakEndingAt(Microsoft.CodeAnalysis.Text.SourceText text, int index, out int startLinebreak, out int lengthLinebreak) -> void
 static Microsoft.CodeAnalysis.Text.TextUtilities.IsAnyLineBreakCharacter(char c) -> bool
+static Microsoft.CodeAnalysis.Text.TextUtilities.IsCombiningChar(System.Globalization.UnicodeCategory cat) -> bool
+static Microsoft.CodeAnalysis.Text.TextUtilities.IsConnectingChar(System.Globalization.UnicodeCategory cat) -> bool
+static Microsoft.CodeAnalysis.Text.TextUtilities.IsDecimalDigitChar(System.Globalization.UnicodeCategory cat) -> bool
+static Microsoft.CodeAnalysis.Text.TextUtilities.IsFormattingChar(System.Globalization.UnicodeCategory cat) -> bool
+static Microsoft.CodeAnalysis.Text.TextUtilities.IsFormattingChar(char ch) -> bool
+static Microsoft.CodeAnalysis.Text.TextUtilities.IsIdentifierPartCharacter(char ch) -> bool
+static Microsoft.CodeAnalysis.Text.TextUtilities.IsIdentifierStartCharacter(char ch) -> bool
+static Microsoft.CodeAnalysis.Text.TextUtilities.IsLetterChar(System.Globalization.UnicodeCategory cat) -> bool
+static Microsoft.CodeAnalysis.Text.TextUtilities.IsNewLine(char ch) -> bool
+static Microsoft.CodeAnalysis.Text.TextUtilities.IsValidIdentifier(string name) -> bool
+static Microsoft.CodeAnalysis.Text.TextUtilities.IsWhitespace(char ch) -> bool
 static Microsoft.CodeAnalysis.ThreeStateHelpers.HasValue(this Microsoft.CodeAnalysis.ThreeState value) -> bool
 static Microsoft.CodeAnalysis.ThreeStateHelpers.ToThreeState(this bool value) -> Microsoft.CodeAnalysis.ThreeState
 static Microsoft.CodeAnalysis.ThreeStateHelpers.Value(this Microsoft.CodeAnalysis.ThreeState value) -> bool

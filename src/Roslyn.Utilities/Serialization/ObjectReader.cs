@@ -13,7 +13,7 @@ namespace Roslyn.Utilities
 #if COMPILERCORE
     using Resources = CodeAnalysisResources;
 #else
-    using Resources = WorkspacesResources;
+
 #endif
 
     public sealed partial class ObjectReader : IDisposable

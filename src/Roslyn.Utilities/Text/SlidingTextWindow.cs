@@ -35,7 +35,7 @@ namespace Microsoft.CodeAnalysis.Text
         /// </summary>
         public const char InvalidCharacter = char.MaxValue;
 
-        private const int DefaultWindowLength = 2048;
+        private const int DefaultWindowLength = 8192;
 
         private readonly SourceText _text;                 // Source of text to parse.
         private int _basis;                                // Offset of the window relative to the SourceText start.
@@ -99,6 +99,14 @@ namespace Microsoft.CodeAnalysis.Text
             get
             {
                 return _offset;
+            }
+        }
+
+        public char[] Characters
+        {
+            get
+            {
+                return Text.ToCharArray();
             }
         }
 
