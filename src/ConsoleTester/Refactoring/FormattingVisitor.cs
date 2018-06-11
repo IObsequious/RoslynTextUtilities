@@ -14,7 +14,7 @@ namespace ConsoleTester.Refactoring
     {
         private int _namespaceNestLevel = 0;
         private int _typeNestLevel = 0;
-        private SemanticModel _semanticModel;
+        private readonly SemanticModel _semanticModel;
 
         private static readonly SymbolDisplayFormat TypeNameFormat = new SymbolDisplayFormat(
             SymbolDisplayGlobalNamespaceStyle.Omitted,
@@ -36,7 +36,7 @@ namespace ConsoleTester.Refactoring
 
         public static async Task<Document> FormatAsync(Document document, CancellationToken cancellationToken = default)
         {
-            SemanticDocument semanticDocument = await SemanticDocument.CreateAsync(document, cancellationToken);
+            SemanticDocument semanticDocument = await SemanticDocument.CreateAsync(document, cancellationToken).ConfigureAwait(false);
 
             FormattingVisitor visitor = new FormattingVisitor(semanticDocument.SemanticModel);
 
@@ -46,6 +46,7 @@ namespace ConsoleTester.Refactoring
         }
 
         /// <summary>Called when the visitor visits a NamespaceDeclarationSyntax node.</summary>
+        /// <param name="node"></param>
         public override SyntaxNode VisitNamespaceDeclaration(NamespaceDeclarationSyntax node)
         {
             _namespaceNestLevel++;
@@ -56,6 +57,7 @@ namespace ConsoleTester.Refactoring
         }
 
         /// <summary>Called when the visitor visits a ClassDeclarationSyntax node.</summary>
+        /// <param name="node"></param>
         public override SyntaxNode VisitClassDeclaration(ClassDeclarationSyntax node)
         {
             _typeNestLevel++;
@@ -74,7 +76,6 @@ namespace ConsoleTester.Refactoring
             return newNode;
         }
 
-
         private ConstructorDeclarationSyntax CreateConstructor(INamedTypeSymbol symbol)
         {
             ConstructorDeclarationSyntax ctor = SyntaxFactory.ConstructorDeclaration(SyntaxFactory.Identifier(symbol.Name));
@@ -85,8 +86,7 @@ namespace ConsoleTester.Refactoring
 
             foreach (IPropertySymbol property in properties)
             {
-
-                var expression = GetExpression(property);
+                ExpressionSyntax expression = GetExpression(property);
 
                 string expressionString = expression.ToFullString();
 
@@ -101,9 +101,6 @@ namespace ConsoleTester.Refactoring
 
             return ctor.NormalizeWhitespace();
         }
-
-        private static ExpressionSyntax DefaultExpression(string typeName) =>
-            SyntaxFactory.DefaultExpression(SyntaxFactory.ParseTypeName(typeName));
 
         private static ExpressionSyntax GetExpression(IPropertySymbol property)
         {
@@ -134,41 +131,13 @@ namespace ConsoleTester.Refactoring
                         SyntaxFactory.ArgumentList().WithLeadingTrivia(),
                         null);
                     break;
-
             }
-
 
             return SyntaxFactory.AssignmentExpression(
                 SyntaxKind.SimpleAssignmentExpression,
                 SyntaxFactory.IdentifierName(property.Name),
                 WithLeadingSpace(SyntaxFactory.Token(SyntaxKind.EqualsToken)),
                 rightExpression);
-        }
-
-        private static LiteralExpressionSyntax StringLiteralExpression(string text = "")
-        {
-            SyntaxToken literalToken = SyntaxFactory.Token(
-                SyntaxFactory.TriviaList(),
-                SyntaxKind.StringLiteralToken,
-                text,
-                text,
-                SyntaxFactory.TriviaList()
-            );
-
-            return SyntaxFactory.LiteralExpression(SyntaxKind.StringLiteralExpression, literalToken);
-        }
-
-        private static LiteralExpressionSyntax NumericLiteralExpression(int value = 0)
-        {
-            SyntaxToken literalToken = SyntaxFactory.Token(
-                SyntaxFactory.TriviaList(),
-                SyntaxKind.NumericLiteralToken,
-                value.ToString(),
-                value.ToString(),
-                SyntaxFactory.TriviaList()
-            );
-
-            return SyntaxFactory.LiteralExpression(SyntaxKind.StringLiteralExpression, literalToken);
         }
 
         private SyntaxList<MemberDeclarationSyntax> VisitClassMembers(SyntaxList<MemberDeclarationSyntax> members)
@@ -239,11 +208,6 @@ namespace ConsoleTester.Refactoring
             return token.WithLeadingTrivia(GetIndentation());
         }
 
-        private SyntaxToken SurroundTokenWithSpace(SyntaxToken token)
-        {
-            return token.WithLeadingTrivia(SyntaxFactory.Space).WithTrailingTrivia(SyntaxFactory.Space);
-        }
-
         private static SyntaxToken WithLeadingSpace(SyntaxToken token)
         {
             return token.WithLeadingTrivia(SyntaxFactory.Space).WithTrailingTrivia(EmptyTrivia());
@@ -265,6 +229,7 @@ namespace ConsoleTester.Refactoring
         }
 
         /// <summary>Called when the visitor visits a PropertyDeclarationSyntax node.</summary>
+        /// <param name="node"></param>
         public override SyntaxNode VisitPropertyDeclaration(PropertyDeclarationSyntax node)
         {
             PropertyDeclarationSyntax newNode = (PropertyDeclarationSyntax) base.VisitPropertyDeclaration(node);
@@ -275,22 +240,20 @@ namespace ConsoleTester.Refactoring
 
             newNode = newNode.WithModifiers(VisitModifiers(newNode.Modifiers));
 
-            newNode = newNode.WithAccessorList((AccessorListSyntax) VisitAccessorList(newNode.AccessorList));
-
-            return newNode;
+            return newNode.WithAccessorList((AccessorListSyntax) VisitAccessorList(newNode.AccessorList));
         }
 
         /// <summary>Called when the visitor visits a AccessorListSyntax node.</summary>
+        /// <param name="node"></param>
         public override SyntaxNode VisitAccessorList(AccessorListSyntax node)
         {
             AccessorListSyntax newNode = (AccessorListSyntax) base.VisitAccessorList(node);
 
-            newNode = newNode.WithAccessors(VisitList(newNode.Accessors));
-
-            return newNode;
+            return newNode.WithAccessors(VisitList(newNode.Accessors));
         }
 
         /// <summary>Called when the visitor visits a AccessorDeclarationSyntax node.</summary>
+        /// <param name="node"></param>
         public override SyntaxNode VisitAccessorDeclaration(AccessorDeclarationSyntax node)
         {
             AccessorDeclarationSyntax newNode = (AccessorDeclarationSyntax) base.VisitAccessorDeclaration(node);
@@ -298,9 +261,7 @@ namespace ConsoleTester.Refactoring
             newNode = newNode.WithAttributeLists(SyntaxFactory.List<AttributeListSyntax>());
             newNode = newNode.WithKeyword(newNode.Keyword.WithoutTrivia());
             newNode = newNode.WithBody(null);
-            newNode = newNode.WithSemicolonToken(SemicolonToken());
-
-            return newNode;
+            return newNode.WithSemicolonToken(SemicolonToken());
         }
     }
 }

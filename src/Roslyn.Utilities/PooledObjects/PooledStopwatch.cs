@@ -3,7 +3,7 @@ using System.Diagnostics;
 
 namespace Microsoft.CodeAnalysis.PooledObjects
 {
-    public class PooledStopwatch : Stopwatch
+    public sealed class PooledStopwatch : Stopwatch
     {
         private static readonly ObjectPool<PooledStopwatch> s_poolInstance = CreatePool();
         private readonly ObjectPool<PooledStopwatch> _pool;
@@ -22,8 +22,7 @@ namespace Microsoft.CodeAnalysis.PooledObjects
         public static ObjectPool<PooledStopwatch> CreatePool()
         {
             ObjectPool<PooledStopwatch> pool = null;
-            pool = new ObjectPool<PooledStopwatch>(factory: () => new PooledStopwatch(pool), size: 128);
-            return pool;
+            return new ObjectPool<PooledStopwatch>(factory: () => new PooledStopwatch(pool), size: 128);
         }
 
         public static PooledStopwatch StartInstance()

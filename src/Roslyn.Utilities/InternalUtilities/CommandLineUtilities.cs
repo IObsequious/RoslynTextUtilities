@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Text;
 
 namespace Roslyn.Utilities
@@ -72,7 +72,7 @@ namespace Roslyn.Utilities
                             i++;
                             break;
                         default:
-                            if (current >= 0x1 && current <= 0x1f || current == '|')
+                            if ((current >= 0x1 && current <= 0x1f) || current == '|')
                             {
                                 if (illegalChar == null)
                                 {

@@ -10,8 +10,8 @@ namespace Roslyn.Utilities
 {
     public sealed class BlobBuildingStream : Stream
     {
-        private static ObjectPool<BlobBuildingStream> s_pool = new ObjectPool<BlobBuildingStream>(factory: () => new BlobBuildingStream());
-        private BlobBuilder _builder;
+        private static readonly ObjectPool<BlobBuildingStream> s_pool = new ObjectPool<BlobBuildingStream>(factory: () => new BlobBuildingStream());
+        private readonly BlobBuilder _builder;
         public const int ChunkSize = 32 * 1024;
 
         public override bool CanWrite

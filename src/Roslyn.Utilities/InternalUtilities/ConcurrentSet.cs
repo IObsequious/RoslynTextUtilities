@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -6,7 +6,7 @@ using System.Diagnostics;
 
 namespace Roslyn.Utilities
 {
-    [DebuggerDisplay(value: "Count = {Count}")]
+    [DebuggerDisplay(value: "Count = {" + nameof(Count) + "}")]
     public sealed class ConcurrentSet<T> : ICollection<T>
     {
         private const int DefaultConcurrencyLevel = 2;
@@ -47,9 +47,9 @@ namespace Roslyn.Utilities
             }
         }
 
-        public bool Contains(T value)
+        public bool Contains(T item)
         {
-            return _dictionary.ContainsKey(value);
+            return _dictionary.ContainsKey(item);
         }
 
         public bool Add(T value)
@@ -68,9 +68,9 @@ namespace Roslyn.Utilities
             }
         }
 
-        public bool Remove(T value)
+        public bool Remove(T item)
         {
-            return _dictionary.TryRemove(value, out byte b);
+            return _dictionary.TryRemove(item, out byte b);
         }
 
         public void Clear()
@@ -136,7 +136,7 @@ namespace Roslyn.Utilities
 
         public void CopyTo(T[] array, int arrayIndex)
         {
-            throw new NotImplementedException();
+            throw new NotSupportedException();
         }
     }
 }

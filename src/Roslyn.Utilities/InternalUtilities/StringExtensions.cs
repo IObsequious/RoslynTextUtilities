@@ -9,9 +9,9 @@ namespace Roslyn.Utilities
     {
         private static ImmutableArray<string> s_lazyNumerals;
 
-        public static string GetNumeral(int number)
+        public static string GetNumeral(this int number)
         {
-            var numerals = s_lazyNumerals;
+            ImmutableArray<string> numerals = s_lazyNumerals;
             if (numerals.IsDefault)
             {
                 numerals = ImmutableArray.Create("0", "1", "2", "3", "4", "5", "6", "7", "8", "9");
@@ -100,7 +100,7 @@ namespace Roslyn.Utilities
             char lastChar = '.';
             foreach (char c in name)
             {
-                if (c == '\0' || c == '.' && lastChar == '.')
+                if (c == '\0' || (c == '.' && lastChar == '.'))
                 {
                     return false;
                 }
@@ -248,9 +248,9 @@ namespace Roslyn.Utilities
         public static int GetCaseInsensitivePrefixLength(this string string1, string string2)
         {
             int x = 0;
-            while (x < string1.Length &&
-                   x < string2.Length &&
-                   char.ToUpper(string1[x]) == char.ToUpper(string2[x]))
+            while (x < string1.Length
+                   && x < string2.Length
+                   && char.ToUpper(string1[x]) == char.ToUpper(string2[x]))
             {
                 x++;
             }

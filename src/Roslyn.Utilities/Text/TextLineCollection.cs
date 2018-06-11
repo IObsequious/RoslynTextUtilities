@@ -76,7 +76,7 @@ namespace Microsoft.CodeAnalysis.Text
                         return _lines[ndx];
                     }
 
-                    return default(TextLine);
+                    return default;
                 }
             }
 
@@ -84,7 +84,7 @@ namespace Microsoft.CodeAnalysis.Text
             {
                 if (_index < _lines.Count - 1)
                 {
-                    _index = _index + 1;
+                    _index++;
                     return true;
                 }
 

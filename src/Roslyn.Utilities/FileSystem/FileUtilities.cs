@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -174,12 +174,7 @@ namespace Roslyn.Utilities
             }
 
             string normalizedPath = TryNormalizeAbsolutePath(resolvedPath);
-            if (normalizedPath == null)
-            {
-                return null;
-            }
-
-            return normalizedPath;
+            return normalizedPath ?? null;
         }
 
         public static string NormalizeAbsolutePath(string path)

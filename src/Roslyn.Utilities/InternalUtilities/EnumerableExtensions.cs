@@ -165,20 +165,17 @@ namespace Roslyn.Utilities
 
         public static bool IsEmpty<T>(this IEnumerable<T> source)
         {
-            IReadOnlyCollection<T> readOnlyCollection = source as IReadOnlyCollection<T>;
-            if (readOnlyCollection != null)
+            if (source is IReadOnlyCollection<T> readOnlyCollection)
             {
                 return readOnlyCollection.Count == 0;
             }
 
-            ICollection<T> genericCollection = source as ICollection<T>;
-            if (genericCollection != null)
+            if (source is ICollection<T> genericCollection)
             {
                 return genericCollection.Count == 0;
             }
 
-            ICollection collection = source as ICollection;
-            if (collection != null)
+            if (source is ICollection collection)
             {
                 return collection.Count == 0;
             }
@@ -363,7 +360,11 @@ namespace Roslyn.Utilities
     public static class Functions<T>
     {
         public static readonly Func<T, T> Identity = t => t;
-        public static readonly Func<T, bool> True = t => true;
+
+        public static readonly Func<T, bool> True = delegate
+        {
+            return true;
+        };
     }
 }
 

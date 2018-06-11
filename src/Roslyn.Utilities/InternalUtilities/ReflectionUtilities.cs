@@ -34,11 +34,7 @@ namespace Roslyn.Utilities
 
         public static Type GetTypeFromEither(string contractName, string desktopName)
         {
-            Type type = TryGetType(contractName);
-            if (type == null)
-            {
-                type = TryGetType(desktopName);
-            }
+            Type type = TryGetType(contractName) ?? TryGetType(desktopName);
 
             return type;
         }
@@ -97,7 +93,7 @@ namespace Roslyn.Utilities
         {
             if (methodInfo == null)
             {
-                return default(T);
+                return default;
             }
 
             return (T) (object) methodInfo.CreateDelegate(typeof(T));
@@ -107,7 +103,7 @@ namespace Roslyn.Utilities
         {
             if (constructorInfo == null)
             {
-                return default(T);
+                return default;
             }
 
             try
@@ -117,8 +113,7 @@ namespace Roslyn.Utilities
             catch (TargetInvocationException e)
             {
                 ExceptionDispatchInfo.Capture(e.InnerException).Throw();
-                Debug.Assert(false, message: "Unreachable");
-                return default(T);
+                return default;
             }
         }
 

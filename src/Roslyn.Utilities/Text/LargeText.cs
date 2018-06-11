@@ -14,8 +14,6 @@ namespace Microsoft.CodeAnalysis.Text
         internal const int ChunkSize = LargeObjectHeapLimitInChars;
         private readonly ImmutableArray<char[]> _chunks;
         private readonly int[] _chunkStartOffsets;
-        private readonly int _length;
-        private readonly Encoding _encodingOpt;
 
         internal LargeText(ImmutableArray<char[]> chunks,
             Encoding encodingOpt,
@@ -25,7 +23,7 @@ namespace Microsoft.CodeAnalysis.Text
             : base(checksum, checksumAlgorithm, embeddedTextBlob)
         {
             _chunks = chunks;
-            _encodingOpt = encodingOpt;
+            Encoding = encodingOpt;
             _chunkStartOffsets = new int[chunks.Length];
             int offset = 0;
             for (int i = 0; i < chunks.Length; i++)
@@ -34,19 +32,18 @@ namespace Microsoft.CodeAnalysis.Text
                 offset += chunks[i].Length;
             }
 
-            _length = offset;
+            Length = offset;
         }
 
         internal LargeText(ImmutableArray<char[]> chunks, Encoding encodingOpt, SourceHashAlgorithm checksumAlgorithm)
-            : this(chunks, encodingOpt, default(ImmutableArray<byte>), checksumAlgorithm, default(ImmutableArray<byte>))
+            : this(chunks, encodingOpt, default, checksumAlgorithm, default)
         {
         }
 
         public static SourceText Decode(Stream stream,
             Encoding encoding,
             SourceHashAlgorithm checksumAlgorithm,
-            bool throwIfBinaryDetected,
-            bool canBeEmbedded)
+            bool throwIfBinaryDetected)
         {
             stream.Seek(0, SeekOrigin.Begin);
             long longLength = stream.Length;
@@ -60,9 +57,9 @@ namespace Microsoft.CodeAnalysis.Text
             int length = (int) longLength;
             using (StreamReader reader = new StreamReader(stream, encoding, true, Math.Min(length, 4096), true))
             {
-                var chunks = ReadChunksFromTextReader(reader, maxCharRemainingGuess, throwIfBinaryDetected);
-                var checksum = CalculateChecksum(stream, checksumAlgorithm);
-                var embeddedTextBlob = default(ImmutableArray<byte>);
+                ImmutableArray<char[]> chunks = ReadChunksFromTextReader(reader, maxCharRemainingGuess, throwIfBinaryDetected);
+                ImmutableArray<byte> checksum = CalculateChecksum(stream, checksumAlgorithm);
+                ImmutableArray<byte> embeddedTextBlob = default(ImmutableArray<byte>);
                 return new LargeText(chunks, reader.CurrentEncoding, checksum, checksumAlgorithm, embeddedTextBlob);
             }
         }
@@ -74,7 +71,7 @@ namespace Microsoft.CodeAnalysis.Text
                 return From(string.Empty, encodingOpt, checksumAlgorithm);
             }
 
-            var chunks = ReadChunksFromTextReader(reader, length, false);
+            ImmutableArray<char[]> chunks = ReadChunksFromTextReader(reader, length, false);
             return new LargeText(chunks, encodingOpt, checksumAlgorithm);
         }
 
@@ -82,7 +79,7 @@ namespace Microsoft.CodeAnalysis.Text
             int maxCharRemainingGuess,
             bool throwIfBinaryDetected)
         {
-            ArrayBuilder<char[]> chunks = ArrayBuilder<char[]>.GetInstance(1 + maxCharRemainingGuess / ChunkSize);
+            ArrayBuilder<char[]> chunks = ArrayBuilder<char[]>.GetInstance(1 + (maxCharRemainingGuess / ChunkSize));
             while (reader.Peek() != -1)
             {
                 int nextChunkSize = ChunkSize;
@@ -126,7 +123,7 @@ namespace Microsoft.CodeAnalysis.Text
                         return true;
                     }
 
-                    i += 1;
+                    i++;
                 }
                 else
                 {
@@ -152,21 +149,9 @@ namespace Microsoft.CodeAnalysis.Text
             }
         }
 
-        public override Encoding Encoding
-        {
-            get
-            {
-                return _encodingOpt;
-            }
-        }
+        public override Encoding Encoding { get; }
 
-        public override int Length
-        {
-            get
-            {
-                return _length;
-            }
-        }
+        public override int Length { get; }
 
         public override void CopyTo(int sourceIndex, char[] destination, int destinationIndex, int count)
         {
@@ -179,7 +164,7 @@ namespace Microsoft.CodeAnalysis.Text
             int chunkStartOffset = sourceIndex - _chunkStartOffsets[chunkIndex];
             while (true)
             {
-                var chunk = _chunks[chunkIndex];
+                char[] chunk = _chunks[chunkIndex];
                 int charsToCopy = Math.Min(chunk.Length - chunkStartOffset, count);
                 Array.Copy(chunk, chunkStartOffset, destination, destinationIndex, charsToCopy);
                 count -= charsToCopy;
@@ -194,9 +179,9 @@ namespace Microsoft.CodeAnalysis.Text
             }
         }
 
-        public override void Write(TextWriter writer, TextSpan span, CancellationToken cancellationToken = default(CancellationToken))
+        public override void Write(TextWriter writer, TextSpan span, CancellationToken cancellationToken = default)
         {
-            if (span.Start < 0 || span.Start > _length || span.End > _length)
+            if (span.Start < 0 || span.Start > Length || span.End > Length)
             {
                 throw new ArgumentOutOfRangeException(nameof(span));
             }
@@ -213,7 +198,7 @@ namespace Microsoft.CodeAnalysis.Text
             while (true)
             {
                 cancellationToken.ThrowIfCancellationRequested();
-                var chunk = _chunks[chunkIndex];
+                char[] chunk = _chunks[chunkIndex];
                 int charsToWrite = Math.Min(chunk.Length - chunkStartOffset, count);
                 if (chunkWriter != null && chunkStartOffset == 0 && charsToWrite == chunk.Length)
                 {
@@ -246,9 +231,9 @@ namespace Microsoft.CodeAnalysis.Text
             int index = 0;
             int lastCr = -1;
             ArrayBuilder<int> arrayBuilder = ArrayBuilder<int>.GetInstance();
-            foreach (var chunk in _chunks)
+            foreach (char[] chunk in _chunks)
             {
-                foreach (var c in chunk)
+                foreach (char c in chunk)
                 {
                     index++;
                     const uint bias = '\r' + 1;

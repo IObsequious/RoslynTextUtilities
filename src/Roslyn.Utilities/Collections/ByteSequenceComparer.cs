@@ -101,9 +101,9 @@ namespace Microsoft.CodeAnalysis.Collections
             return Equals(x, y);
         }
 
-        int IEqualityComparer<byte[]>.GetHashCode(byte[] x)
+        int IEqualityComparer<byte[]>.GetHashCode(byte[] obj)
         {
-            return GetHashCode(x);
+            return GetHashCode(obj);
         }
 
         bool IEqualityComparer<ImmutableArray<byte>>.Equals(ImmutableArray<byte> x, ImmutableArray<byte> y)
@@ -111,9 +111,9 @@ namespace Microsoft.CodeAnalysis.Collections
             return Equals(x, y);
         }
 
-        int IEqualityComparer<ImmutableArray<byte>>.GetHashCode(ImmutableArray<byte> x)
+        int IEqualityComparer<ImmutableArray<byte>>.GetHashCode(ImmutableArray<byte> obj)
         {
-            return GetHashCode(x);
+            return GetHashCode(obj);
         }
     }
 }

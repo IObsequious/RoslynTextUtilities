@@ -40,9 +40,8 @@ namespace Microsoft.CodeAnalysis.Collections
         public static ObjectPool<OrderPreservingMultiDictionary<K, V>> CreatePool()
         {
             ObjectPool<OrderPreservingMultiDictionary<K, V>> pool = null;
-            pool = new ObjectPool<OrderPreservingMultiDictionary<K, V>>(factory: () => new OrderPreservingMultiDictionary<K, V>(pool),
-                size: 16);
-            return pool;
+            return new ObjectPool<OrderPreservingMultiDictionary<K, V>>(() => new OrderPreservingMultiDictionary<K, V>(pool),
+                16);
         }
 
         public static OrderPreservingMultiDictionary<K, V> GetInstance()
@@ -66,13 +65,7 @@ namespace Microsoft.CodeAnalysis.Collections
             _dictionary = _dictionary ?? PooledDictionary<K, ValueSet>.GetInstance();
         }
 
-        public bool IsEmpty
-        {
-            get
-            {
-                return _dictionary == null;
-            }
-        }
+        public bool IsEmpty => _dictionary == null;
 
         public void Add(K k, V v)
         {
@@ -119,18 +112,10 @@ namespace Microsoft.CodeAnalysis.Collections
 
         public bool Contains(K key, V value)
         {
-            return !IsEmpty &&
-                   _dictionary.TryGetValue(key, out ValueSet valueSet) &&
-                   valueSet.Contains(value);
+            return !IsEmpty && _dictionary.TryGetValue(key, out ValueSet valueSet) && valueSet.Contains(value);
         }
 
-        public Dictionary<K, ValueSet>.KeyCollection Keys
-        {
-            get
-            {
-                return IsEmpty ? s_emptyDictionary.Keys : _dictionary.Keys;
-            }
-        }
+        public Dictionary<K, ValueSet>.KeyCollection Keys => IsEmpty ? s_emptyDictionary.Keys : _dictionary.Keys;
 
         public struct ValueSet : IEnumerable<V>
         {
@@ -187,21 +172,15 @@ namespace Microsoft.CodeAnalysis.Collections
                     ArrayBuilder<V> arrayBuilder = _value as ArrayBuilder<V>;
                     if (arrayBuilder == null)
                     {
-                        Debug.Assert(_value is V, message: "Item must be a a V");
-                        return ImmutableArray.Create<V>((V) _value);
+                        Debug.Assert(_value is V, "Item must be a a V");
+                        return ImmutableArray.Create((V) _value);
                     }
 
                     return arrayBuilder.ToImmutable();
                 }
             }
 
-            internal int Count
-            {
-                get
-                {
-                    return (_value as ArrayBuilder<V>)?.Count ?? 1;
-                }
-            }
+            internal int Count => (_value as ArrayBuilder<V>)?.Count ?? 1;
 
             IEnumerator IEnumerable.GetEnumerator()
             {
@@ -224,7 +203,7 @@ namespace Microsoft.CodeAnalysis.Collections
                 ArrayBuilder<V> arrayBuilder = _value as ArrayBuilder<V>;
                 if (arrayBuilder == null)
                 {
-                    Debug.Assert(_value is V, message: "_value must be a V");
+                    Debug.Assert(_value is V, "_value must be a V");
                     arrayBuilder = ArrayBuilder<V>.GetInstance(2);
                     arrayBuilder.Add((V) _value);
                     arrayBuilder.Add(item);
@@ -251,21 +230,9 @@ namespace Microsoft.CodeAnalysis.Collections
                     _index = -1;
                 }
 
-                public V Current
-                {
-                    get
-                    {
-                        return _valueSet[_index];
-                    }
-                }
+                public V Current => _valueSet[_index];
 
-                object IEnumerator.Current
-                {
-                    get
-                    {
-                        return Current;
-                    }
-                }
+                object IEnumerator.Current => Current;
 
                 public bool MoveNext()
                 {

@@ -9,43 +9,28 @@ namespace Microsoft.CodeAnalysis.Text
 {
     public sealed class StringText : SourceText
     {
-        private readonly string _source;
-        private readonly Encoding _encodingOpt;
-
         internal StringText(
             string source,
             Encoding encodingOpt,
-            ImmutableArray<byte> checksum = default(ImmutableArray<byte>),
+            ImmutableArray<byte> checksum = default,
             SourceHashAlgorithm checksumAlgorithm = SourceHashAlgorithm.Sha1,
-            ImmutableArray<byte> embeddedTextBlob = default(ImmutableArray<byte>))
+            ImmutableArray<byte> embeddedTextBlob = default)
             : base(checksum, checksumAlgorithm, embeddedTextBlob)
         {
             Debug.Assert(source != null);
-            _source = source;
-            _encodingOpt = encodingOpt;
+            Source = source;
+            Encoding = encodingOpt;
         }
 
-        public override Encoding Encoding
-        {
-            get
-            {
-                return _encodingOpt;
-            }
-        }
+        public override Encoding Encoding { get; }
 
-        public string Source
-        {
-            get
-            {
-                return _source;
-            }
-        }
+        public string Source { get; }
 
         public override int Length
         {
             get
             {
-                return _source.Length;
+                return Source.Length;
             }
         }
 
@@ -53,7 +38,7 @@ namespace Microsoft.CodeAnalysis.Text
         {
             get
             {
-                return _source[position];
+                return Source[position];
             }
         }
 
@@ -77,15 +62,15 @@ namespace Microsoft.CodeAnalysis.Text
             Source.CopyTo(sourceIndex, destination, destinationIndex, count);
         }
 
-        public override void Write(TextWriter textWriter, TextSpan span, CancellationToken cancellationToken = default(CancellationToken))
+        public override void Write(TextWriter writer, TextSpan span, CancellationToken cancellationToken = default)
         {
             if (span.Start == 0 && span.End == Length)
             {
-                textWriter.Write(Source);
+                writer.Write(Source);
             }
             else
             {
-                base.Write(textWriter, span, cancellationToken);
+                base.Write(writer, span, cancellationToken);
             }
         }
     }

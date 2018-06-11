@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace Roslyn.Utilities
 {
@@ -10,19 +10,25 @@ namespace Roslyn.Utilities
         {
         }
 
-        bool IEqualityComparer<string>.Equals(string a, string b)
+        bool IEqualityComparer<string>.Equals(string x, string y)
         {
-            return Equals(a, b);
+            return Equals(x, y);
         }
 
         public static bool Equals(string a, string b)
         {
+            if (b == null)
+                throw new System.ArgumentNullException(nameof(b));
+
+            if (a == null)
+                throw new System.ArgumentNullException(nameof(a));
+
             return string.Equals(a, b);
         }
 
-        int IEqualityComparer<string>.GetHashCode(string s)
+        int IEqualityComparer<string>.GetHashCode(string obj)
         {
-            return Hash.GetFNVHashCode(s);
+            return Hash.GetFNVHashCode(obj);
         }
     }
 }

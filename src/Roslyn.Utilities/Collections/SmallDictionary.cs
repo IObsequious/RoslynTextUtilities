@@ -46,7 +46,7 @@ namespace Microsoft.CodeAnalysis
                 return TryGetValue(GetHashCode(key), key, out value);
             }
 
-            value = default(V);
+            value = default;
             return false;
         }
 
@@ -67,10 +67,7 @@ namespace Microsoft.CodeAnalysis
 
                 return value;
             }
-            set
-            {
-                Insert(GetHashCode(key), key, value, false);
-            }
+            set => Insert(GetHashCode(key), key, value, false);
         }
 
         public bool ContainsKey(K key)
@@ -79,7 +76,7 @@ namespace Microsoft.CodeAnalysis
             return TryGetValue(key, out value);
         }
 
-        [Conditional(conditionString: "DEBUG")]
+        [Conditional("DEBUG")]
         public void AssertBalanced()
         {
 #if DEBUG
@@ -98,13 +95,7 @@ namespace Microsoft.CodeAnalysis
                 Value = value;
             }
 
-            public virtual Node Next
-            {
-                get
-                {
-                    return null;
-                }
-            }
+            public virtual Node Next => null;
         }
 
         private sealed class NodeLinked : Node
@@ -128,13 +119,7 @@ namespace Microsoft.CodeAnalysis
                 this.next = next;
             }
 
-            public override Node Next
-            {
-                get
-                {
-                    return next;
-                }
-            }
+            public override Node Next => next;
         }
 
         private abstract class HashedNode : Node
@@ -153,6 +138,7 @@ namespace Microsoft.CodeAnalysis
         {
             public AvlNode Left;
             public AvlNode Right;
+
             public AvlNode(int hashCode, K key, V value)
                 : base(hashCode, key, value)
             {
@@ -163,8 +149,7 @@ namespace Microsoft.CodeAnalysis
                 if (V == null) return 0;
                 int a = AssertBalanced(V.Left);
                 int b = AssertBalanced(V.Right);
-                if (a - b != V.Balance ||
-                    Math.Abs(a - b) >= 2)
+                if (a - b != V.Balance || Math.Abs(a - b) >= 2)
                 {
                     throw new InvalidOperationException();
                 }
@@ -194,7 +179,7 @@ namespace Microsoft.CodeAnalysis
             }
             while (b != null);
 
-            value = default(V);
+            value = default;
             return false;
             hasBucket:
             if (CompareKeys(b.Key, key))
@@ -219,7 +204,7 @@ namespace Microsoft.CodeAnalysis
                 next = next.Next;
             }
 
-            value = default(V);
+            value = default;
             return false;
         }
 
@@ -445,13 +430,7 @@ namespace Microsoft.CodeAnalysis
             }
         }
 
-        public KeyCollection Keys
-        {
-            get
-            {
-                return new KeyCollection(this);
-            }
-        }
+        public KeyCollection Keys => new KeyCollection(this);
 
         public struct KeyCollection : IEnumerable<K>
         {
@@ -486,13 +465,7 @@ namespace Microsoft.CodeAnalysis
                     }
                 }
 
-                public K Current
-                {
-                    get
-                    {
-                        return _current.Key;
-                    }
-                }
+                public K Current => _current.Key;
 
                 public bool MoveNext()
                 {
@@ -539,25 +512,13 @@ namespace Microsoft.CodeAnalysis
                     _e = e;
                 }
 
-                K IEnumerator<K>.Current
-                {
-                    get
-                    {
-                        return _e.Current;
-                    }
-                }
+                K IEnumerator<K>.Current => _e.Current;
 
                 void IDisposable.Dispose()
                 {
                 }
 
-                object IEnumerator.Current
-                {
-                    get
-                    {
-                        return _e.Current;
-                    }
-                }
+                object IEnumerator.Current => _e.Current;
 
                 bool IEnumerator.MoveNext()
                 {
@@ -577,17 +538,11 @@ namespace Microsoft.CodeAnalysis
 
             IEnumerator IEnumerable.GetEnumerator()
             {
-                throw new NotImplementedException();
+                throw new NotSupportedException();
             }
         }
 
-        public ValueCollection Values
-        {
-            get
-            {
-                return new ValueCollection(this);
-            }
-        }
+        public ValueCollection Values => new ValueCollection(this);
 
         public struct ValueCollection : IEnumerable<V>
         {
@@ -624,13 +579,7 @@ namespace Microsoft.CodeAnalysis
                     }
                 }
 
-                public V Current
-                {
-                    get
-                    {
-                        return _current.Value;
-                    }
-                }
+                public V Current => _current.Value;
 
                 public bool MoveNext()
                 {
@@ -677,25 +626,13 @@ namespace Microsoft.CodeAnalysis
                     _e = e;
                 }
 
-                V IEnumerator<V>.Current
-                {
-                    get
-                    {
-                        return _e.Current;
-                    }
-                }
+                V IEnumerator<V>.Current => _e.Current;
 
                 void IDisposable.Dispose()
                 {
                 }
 
-                object IEnumerator.Current
-                {
-                    get
-                    {
-                        return _e.Current;
-                    }
-                }
+                object IEnumerator.Current => _e.Current;
 
                 bool IEnumerator.MoveNext()
                 {
@@ -704,7 +641,7 @@ namespace Microsoft.CodeAnalysis
 
                 void IEnumerator.Reset()
                 {
-                    throw new NotImplementedException();
+                    throw new NotSupportedException();
                 }
             }
 
@@ -715,7 +652,7 @@ namespace Microsoft.CodeAnalysis
 
             IEnumerator IEnumerable.GetEnumerator()
             {
-                throw new NotImplementedException();
+                throw new NotSupportedException();
             }
         }
 
@@ -745,13 +682,7 @@ namespace Microsoft.CodeAnalysis
                 }
             }
 
-            public KeyValuePair<K, V> Current
-            {
-                get
-                {
-                    return new KeyValuePair<K, V>(_current.Key, _current.Value);
-                }
-            }
+            public KeyValuePair<K, V> Current => new KeyValuePair<K, V>(_current.Key, _current.Value);
 
             public bool MoveNext()
             {
@@ -798,25 +729,13 @@ namespace Microsoft.CodeAnalysis
                 _e = e;
             }
 
-            KeyValuePair<K, V> IEnumerator<KeyValuePair<K, V>>.Current
-            {
-                get
-                {
-                    return _e.Current;
-                }
-            }
+            KeyValuePair<K, V> IEnumerator<KeyValuePair<K, V>>.Current => _e.Current;
 
             void IDisposable.Dispose()
             {
             }
 
-            object IEnumerator.Current
-            {
-                get
-                {
-                    return _e.Current;
-                }
-            }
+            object IEnumerator.Current => _e.Current;
 
             bool IEnumerator.MoveNext()
             {
@@ -825,7 +744,7 @@ namespace Microsoft.CodeAnalysis
 
             void IEnumerator.Reset()
             {
-                throw new NotImplementedException();
+                throw new NotSupportedException();
             }
         }
 
@@ -836,7 +755,7 @@ namespace Microsoft.CodeAnalysis
 
         IEnumerator IEnumerable.GetEnumerator()
         {
-            throw new NotImplementedException();
+            throw new NotSupportedException();
         }
 
         private int HeightApprox()
@@ -849,8 +768,7 @@ namespace Microsoft.CodeAnalysis
                 cur = cur.Left;
             }
 
-            h = h + h / 2;
-            return h;
+            return h + (h / 2);
         }
     }
 }

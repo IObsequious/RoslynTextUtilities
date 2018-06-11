@@ -39,58 +39,7 @@ namespace ConsoleTester.Refactoring
 
             }
 
-            private static AccessorDeclarationSyntax AutoGetAccessor
-            {
-                get
-                {
-                    AccessorDeclarationSyntax accessor = SyntaxFactory.AccessorDeclaration(SyntaxKind.GetAccessorDeclaration);
-                    accessor = accessor.WithBody(null);
-                    accessor = accessor.WithSemicolonToken(SyntaxFactory.Token(SyntaxKind.SemicolonToken));
-                    return accessor;
-                }
-            }
-
-            private static AccessorDeclarationSyntax AutoSetAccessor
-            {
-                get
-                {
-                    AccessorDeclarationSyntax accessor = SyntaxFactory.AccessorDeclaration(SyntaxKind.SetAccessorDeclaration);
-                    accessor = accessor.WithBody(null);
-                    accessor = accessor.WithSemicolonToken(SyntaxFactory.Token(SyntaxKind.SemicolonToken));
-                    return accessor;
-                }
-            }
-
             private static AccessorListSyntax AutoGetList
-            {
-                get
-                {
-                    return SyntaxFactory.AccessorList(
-                            SyntaxFactory.SingletonList<AccessorDeclarationSyntax>(
-                                SyntaxFactory.AccessorDeclaration(
-                                        SyntaxKind.GetAccessorDeclaration)
-                                    .WithSemicolonToken(
-                                        SyntaxFactory.Token(
-                                            SyntaxFactory.TriviaList(),
-                                            SyntaxKind.SemicolonToken,
-                                            SyntaxFactory.TriviaList(
-                                                SyntaxFactory.Space)))))
-                        .WithOpenBraceToken(
-                            SyntaxFactory.Token(
-                                SyntaxFactory.TriviaList(),
-                                SyntaxKind.OpenBraceToken,
-                                SyntaxFactory.TriviaList(
-                                    SyntaxFactory.Space)))
-                        .WithCloseBraceToken(
-                            SyntaxFactory.Token(
-                                SyntaxFactory.TriviaList(),
-                                SyntaxKind.CloseBraceToken,
-                                SyntaxFactory.TriviaList(
-                                    SyntaxFactory.LineFeed)));
-                }
-            }
-
-            private static AccessorListSyntax AutoSetList
             {
                 get
                 {
@@ -159,7 +108,6 @@ namespace ConsoleTester.Refactoring
                 }
             }
 
-
             [Flags]
             private enum AutoPropertyKind
             {
@@ -170,7 +118,7 @@ namespace ConsoleTester.Refactoring
 
             }
 
-            public static async Task<Document> UseAutoProperties(Document document, CancellationToken cancellationToken = new CancellationToken())
+            public static async Task<Document> UseAutoPropertiesAsync(Document document, CancellationToken cancellationToken = new CancellationToken())
             {
                 PropertyVisitor visitor = new PropertyVisitor();
                 SyntaxNode root = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
@@ -179,7 +127,6 @@ namespace ConsoleTester.Refactoring
 
                 foreach (PropertyDeclarationSyntax baseProperty in visitor.List)
                 {
-
                     AccessorListSyntax accessorList = SyntaxFactory.AccessorList().WithLeadingTrivia(baseProperty.AccessorList.GetLeadingTrivia())
                         .WithTrailingTrivia(baseProperty.AccessorList.GetTrailingTrivia());
                     PropertyDeclarationSyntax newPropertyDeclaration = baseProperty;
@@ -188,20 +135,19 @@ namespace ConsoleTester.Refactoring
                         AutoPropertyKind kind = AutoPropertyKind.None;
                         if (accessor.IsKind(SyntaxKind.GetAccessorDeclaration))
                         {
-                            kind = kind | AutoPropertyKind.Read;
+                            kind |= AutoPropertyKind.Read;
                         }
 
                         if (accessor.IsKind(SyntaxKind.SetAccessorDeclaration))
                         {
-                            kind = kind | AutoPropertyKind.Write;
+                            kind |= AutoPropertyKind.Write;
                         }
 
-
-                        if (kind.HasFlag(AutoPropertyKind.Read) && !kind.HasFlag(AutoPropertyKind.Write))
+                        if ((kind & AutoPropertyKind.Read) != 0 && (kind & AutoPropertyKind.Write) == 0)
                         {
                             accessorList = accessorList.AddAccessors(AutoGetList.Accessors.ToArray());
                         }
-                        else if (kind.HasFlag(AutoPropertyKind.ReadWrite))
+                        else if ((kind & AutoPropertyKind.ReadWrite) != 0)
                         {
                             accessorList = accessorList.AddAccessors(AutoGetSetList.Accessors.ToArray());
                         }
@@ -211,18 +157,16 @@ namespace ConsoleTester.Refactoring
                         }
 
                         root = root.ReplaceNode(baseProperty.AccessorList, accessorList);
-
                     }
-
                 }
 
                 return document.WithSyntaxRoot(root);
             }
 
             /// <summary>Called when the visitor visits a CompilationUnitSyntax node.</summary>
+            /// <param name="node"></param>
             public override SyntaxNode VisitCompilationUnit(CompilationUnitSyntax node)
             {
-
                 Stack<TypeDeclarationSyntax> stack = new Stack<TypeDeclarationSyntax>();
 
                 CompilationUnitSyntax compilationUnit = (CompilationUnitSyntax)base.VisitCompilationUnit(node);
@@ -232,7 +176,6 @@ namespace ConsoleTester.Refactoring
                     foreach (TypeDeclarationSyntax typeDeclaration in namespaceDeclaration.Members.OfType<TypeDeclarationSyntax>())
                     {
                         stack.Push(typeDeclaration);
-
                     }
                 }
 

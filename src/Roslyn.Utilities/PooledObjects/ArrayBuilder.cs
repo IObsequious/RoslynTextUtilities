@@ -6,7 +6,7 @@ using System.Diagnostics;
 
 namespace Microsoft.CodeAnalysis.PooledObjects
 {
-    [DebuggerDisplay(value: "Count = {Count,nq}")]
+    [DebuggerDisplay(value: "Count = {" + nameof(Count) + ",nq}")]
     [DebuggerTypeProxy(typeof(ArrayBuilder<>.DebuggerProxy))]
     public sealed partial class ArrayBuilder<T> : IReadOnlyCollection<T>, IReadOnlyList<T>
     {
@@ -91,7 +91,7 @@ namespace Microsoft.CodeAnalysis.PooledObjects
         {
             while (index > _builder.Count)
             {
-                _builder.Add(default(T));
+                _builder.Add(default);
             }
 
             if (index == _builder.Count)
@@ -235,7 +235,7 @@ namespace Microsoft.CodeAnalysis.PooledObjects
         {
             if (Count == 0)
             {
-                return default(ImmutableArray<T>);
+                return default;
             }
 
             return ToImmutable();
@@ -299,7 +299,6 @@ namespace Microsoft.CodeAnalysis.PooledObjects
                 }
                 else
                 {
-                    pool.ForgetTrackedObject(this);
                 }
             }
         }
@@ -340,8 +339,7 @@ namespace Microsoft.CodeAnalysis.PooledObjects
         public static ObjectPool<ArrayBuilder<T>> CreatePool(int size)
         {
             ObjectPool<ArrayBuilder<T>> pool = null;
-            pool = new ObjectPool<ArrayBuilder<T>>(factory: () => new ArrayBuilder<T>(pool), size: size);
-            return pool;
+            return new ObjectPool<ArrayBuilder<T>>(factory: () => new ArrayBuilder<T>(pool), size: size);
         }
 
         #endregion
@@ -365,7 +363,7 @@ namespace Microsoft.CodeAnalysis.PooledObjects
         {
             if (Count == 1)
             {
-                var dictionary1 = new Dictionary<K, ImmutableArray<T>>(1, comparer);
+                Dictionary<K, ImmutableArray<T>> dictionary1 = new Dictionary<K, ImmutableArray<T>>(1, comparer);
                 T value = this[0];
                 dictionary1.Add(keySelector(value), ImmutableArray.Create(value));
                 return dictionary1;
@@ -390,7 +388,7 @@ namespace Microsoft.CodeAnalysis.PooledObjects
                 bucket.Add(item);
             }
 
-            var dictionary = new Dictionary<K, ImmutableArray<T>>(accumulator.Count, comparer);
+            Dictionary<K, ImmutableArray<T>> dictionary = new Dictionary<K, ImmutableArray<T>>(accumulator.Count, comparer);
             foreach (KeyValuePair<K, ArrayBuilder<T>> pair in accumulator)
             {
                 dictionary.Add(pair.Key, pair.Value.ToImmutableAndFree());

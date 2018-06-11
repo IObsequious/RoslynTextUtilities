@@ -28,7 +28,7 @@ namespace Microsoft.CodeAnalysis
 
         public int GetHashCode(Diagnostic obj)
         {
-            if (ReferenceEquals(obj, null))
+            if (obj is null)
             {
                 return 0;
             }

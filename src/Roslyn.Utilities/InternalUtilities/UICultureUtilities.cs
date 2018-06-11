@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Globalization;
 using System.Reflection;
 
@@ -25,10 +25,10 @@ namespace Roslyn.Utilities
                 }
 
                 MethodInfo currentUICultureSetter = type.GetTypeInfo().GetDeclaredProperty(currentUICultureName)?.SetMethod;
-                if ((object) currentUICultureSetter == null ||
-                    !currentUICultureSetter.IsStatic ||
-                    currentUICultureSetter.ContainsGenericParameters ||
-                    currentUICultureSetter.ReturnType != typeof(void))
+                if ((object)currentUICultureSetter == null
+                    || !currentUICultureSetter.IsStatic
+                    || currentUICultureSetter.ContainsGenericParameters
+                    || currentUICultureSetter.ReturnType != typeof(void))
                 {
                     setter = null;
                     return false;
@@ -66,21 +66,21 @@ namespace Roslyn.Utilities
 
                 TypeInfo typeInfo = type.GetTypeInfo();
                 MethodInfo currentThreadGetter = typeInfo.GetDeclaredProperty(currentThreadName)?.GetMethod;
-                if ((object) currentThreadGetter == null ||
-                    !currentThreadGetter.IsStatic ||
-                    currentThreadGetter.ContainsGenericParameters ||
-                    currentThreadGetter.ReturnType != type ||
-                    currentThreadGetter.GetParameters().Length != 0)
+                if ((object)currentThreadGetter == null
+                    || !currentThreadGetter.IsStatic
+                    || currentThreadGetter.ContainsGenericParameters
+                    || currentThreadGetter.ReturnType != type
+                    || currentThreadGetter.GetParameters().Length != 0)
                 {
                     setter = null;
                     return false;
                 }
 
                 MethodInfo currentUICultureSetter = typeInfo.GetDeclaredProperty(currentUICultureName)?.SetMethod;
-                if ((object) currentUICultureSetter == null ||
-                    currentUICultureSetter.IsStatic ||
-                    currentUICultureSetter.ContainsGenericParameters ||
-                    currentUICultureSetter.ReturnType != typeof(void))
+                if ((object)currentUICultureSetter == null
+                    || currentUICultureSetter.IsStatic
+                    || currentUICultureSetter.ContainsGenericParameters
+                    || currentUICultureSetter.ReturnType != typeof(void))
                 {
                     setter = null;
                     return false;
@@ -93,10 +93,7 @@ namespace Roslyn.Utilities
                     return false;
                 }
 
-                setter = culture =>
-                {
-                    currentUICultureSetter.Invoke(currentThreadGetter.Invoke(null, null), new[] {culture});
-                };
+                setter = culture => currentUICultureSetter.Invoke(currentThreadGetter.Invoke(null, null), new[] { culture });
                 return true;
             }
             catch
@@ -108,8 +105,8 @@ namespace Roslyn.Utilities
 
         static UICultureUtilities()
         {
-            if (!TryGetCurrentUICultureSetter(out s_setCurrentUICulture) &&
-                !TryGetCurrentThreadUICultureSetter(out s_setCurrentUICulture))
+            if (!TryGetCurrentUICultureSetter(out s_setCurrentUICulture)
+                && !TryGetCurrentThreadUICultureSetter(out s_setCurrentUICulture))
             {
                 s_setCurrentUICulture = null;
             }

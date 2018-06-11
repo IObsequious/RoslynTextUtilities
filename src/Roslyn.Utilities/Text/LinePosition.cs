@@ -9,12 +9,9 @@ namespace Microsoft.CodeAnalysis.Text
         {
             get
             {
-                return default(LinePosition);
+                return default;
             }
         }
-
-        private readonly int _line;
-        private readonly int _character;
 
         public LinePosition(int line, int character)
         {
@@ -28,8 +25,8 @@ namespace Microsoft.CodeAnalysis.Text
                 throw new ArgumentOutOfRangeException(nameof(character));
             }
 
-            _line = line;
-            _character = character;
+            Line = line;
+            Character = character;
         }
 
         public LinePosition(int character)
@@ -39,25 +36,13 @@ namespace Microsoft.CodeAnalysis.Text
                 throw new ArgumentOutOfRangeException(nameof(character));
             }
 
-            _line = -1;
-            _character = character;
+            Line = -1;
+            Character = character;
         }
 
-        public int Line
-        {
-            get
-            {
-                return _line;
-            }
-        }
+        public int Line { get; }
 
-        public int Character
-        {
-            get
-            {
-                return _character;
-            }
-        }
+        public int Character { get; }
 
         public static bool operator ==(LinePosition left, LinePosition right)
         {
@@ -76,7 +61,8 @@ namespace Microsoft.CodeAnalysis.Text
 
         public override bool Equals(object obj)
         {
-            return obj is LinePosition && Equals((LinePosition) obj);
+            return obj is LinePosition linePosition
+                && Equals(linePosition);
         }
 
         public override int GetHashCode()
@@ -91,8 +77,8 @@ namespace Microsoft.CodeAnalysis.Text
 
         public int CompareTo(LinePosition other)
         {
-            int result = _line.CompareTo(other._line);
-            return result != 0 ? result : _character.CompareTo(other.Character);
+            int result = Line.CompareTo(other.Line);
+            return result != 0 ? result : Character.CompareTo(other.Character);
         }
 
         public static bool operator >(LinePosition left, LinePosition right)

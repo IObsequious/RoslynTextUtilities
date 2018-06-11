@@ -34,7 +34,7 @@ namespace Microsoft.CodeAnalysis
         {
 #if DEBUG
             int count = data.First().Count();
-            Debug.Assert(data.All(predicate: d => d.Count() == count));
+            Debug.Assert(data.All(d => d.Count() == count));
 #endif
             return TransposeInternal(data).ToArray();
         }
@@ -46,7 +46,7 @@ namespace Microsoft.CodeAnalysis
             foreach (IEnumerable<T> e in data)
             {
                 enumerators.Add(e.GetEnumerator());
-                width += 1;
+                width++;
             }
 
             try
@@ -84,7 +84,7 @@ namespace Microsoft.CodeAnalysis
 
         public static void AddAllValues<K, T>(this IDictionary<K, ImmutableArray<T>> data, ArrayBuilder<T> builder)
         {
-            foreach (var values in data.Values)
+            foreach (ImmutableArray<T> values in data.Values)
             {
                 builder.AddRange(values);
             }
@@ -94,11 +94,11 @@ namespace Microsoft.CodeAnalysis
             Func<T, K> keySelector,
             IEqualityComparer<K> comparer = null)
         {
-            var dictionary = new Dictionary<K, ImmutableArray<T>>(comparer);
+            Dictionary<K, ImmutableArray<T>> dictionary = new Dictionary<K, ImmutableArray<T>>(comparer);
             IEnumerable<IGrouping<K, T>> groups = data.GroupBy(keySelector, comparer);
             foreach (IGrouping<K, T> grouping in groups)
             {
-                var items = grouping.AsImmutable();
+                ImmutableArray<T> items = grouping.AsImmutable();
                 dictionary.Add(grouping.Key, items);
             }
 
@@ -109,26 +109,26 @@ namespace Microsoft.CodeAnalysis
         {
             if (source == null)
             {
-                return default(TSource);
+                return default;
             }
 
             IList<TSource> list = source as IList<TSource>;
             if (list != null)
             {
-                return list.Count == 1 ? list[0] : default(TSource);
+                return list.Count == 1 ? list[0] : default;
             }
 
             using (IEnumerator<TSource> e = source.GetEnumerator())
             {
                 if (!e.MoveNext())
                 {
-                    return default(TSource);
+                    return default;
                 }
 
                 TSource result = e.Current;
                 if (e.MoveNext())
                 {
-                    return default(TSource);
+                    return default;
                 }
 
                 return result;

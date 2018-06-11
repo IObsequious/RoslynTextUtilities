@@ -37,20 +37,14 @@ namespace Microsoft.CodeAnalysis
                 {
                     if (_count == -1)
                     {
-                        _count = IdentifierCollection._map.Values.Sum(selector: o => o is string ? 1 : ((ISet<string>) o).Count);
+                        _count = IdentifierCollection._map.Values.Sum(o => o is string ? 1 : ((ISet<string>) o).Count);
                     }
 
                     return _count;
                 }
             }
 
-            public bool IsReadOnly
-            {
-                get
-                {
-                    return true;
-                }
-            }
+            public bool IsReadOnly => true;
 
             public IEnumerator<string> GetEnumerator()
             {

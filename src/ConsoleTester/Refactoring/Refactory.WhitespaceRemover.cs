@@ -30,7 +30,7 @@ namespace ConsoleTester.Refactoring
 {
     public static partial class Refactory
     {
-        internal class WhitespaceRemover : CSharpSyntaxRewriter
+        internal sealed class WhitespaceRemover : CSharpSyntaxRewriter
         {
             private WhitespaceRemover(TextSpan? span = null)
             {
@@ -58,7 +58,7 @@ namespace ConsoleTester.Refactoring
             public override SyntaxTrivia VisitTrivia(SyntaxTrivia trivia)
             {
                 if ((trivia.IsKind(SyntaxKind.WhitespaceTrivia) || trivia.IsKind(SyntaxKind.EndOfLineTrivia))
-                    && (Span == null || Span.Value.Contains(trivia.Span)))
+                    && Span?.Contains(trivia.Span) != false)
                 {
                     return Replacement;
                 }

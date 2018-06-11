@@ -139,9 +139,9 @@ namespace Microsoft.CodeAnalysis.Text
 
         public override bool Equals(object obj)
         {
-            if (obj is TextLine)
+            if (obj is TextLine textLine)
             {
-                return Equals((TextLine) obj);
+                return Equals(textLine);
             }
 
             return false;

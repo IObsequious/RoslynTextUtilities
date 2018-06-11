@@ -7,18 +7,17 @@ namespace Microsoft.CodeAnalysis.Text
 {
     public sealed class LargeTextWriter : SourceTextWriter
     {
-        private readonly Encoding _encoding;
         private readonly SourceHashAlgorithm _checksumAlgorithm;
         private readonly ArrayBuilder<char[]> _chunks;
-        private int _bufferSize;
+        private readonly int _bufferSize;
         private char[] _buffer;
         private int _currentUsed;
 
         public LargeTextWriter(Encoding encoding, SourceHashAlgorithm checksumAlgorithm, int length)
         {
-            _encoding = encoding;
+            Encoding = encoding;
             _checksumAlgorithm = checksumAlgorithm;
-            _chunks = ArrayBuilder<char[]>.GetInstance(1 + length / LargeText.ChunkSize);
+            _chunks = ArrayBuilder<char[]>.GetInstance(1 + (length / LargeText.ChunkSize));
             _bufferSize = Math.Min(LargeText.ChunkSize, length);
         }
 
@@ -26,19 +25,13 @@ namespace Microsoft.CodeAnalysis.Text
         {
             Flush();
             return new LargeText(_chunks.ToImmutableAndFree(),
-                _encoding,
-                default(ImmutableArray<byte>),
+                Encoding,
+                default,
                 _checksumAlgorithm,
-                default(ImmutableArray<byte>));
+                default);
         }
 
-        public override Encoding Encoding
-        {
-            get
-            {
-                return _encoding;
-            }
-        }
+        public override Encoding Encoding { get; }
 
         public bool CanFitInAllocatedBuffer(int chars)
         {
@@ -81,14 +74,14 @@ namespace Microsoft.CodeAnalysis.Text
             }
         }
 
-        public override void Write(char[] chars, int index, int count)
+        public override void Write(char[] buffer, int index, int count)
         {
-            if (index < 0 || index >= chars.Length)
+            if (index < 0 || index >= buffer.Length)
             {
                 throw new ArgumentOutOfRangeException(nameof(index));
             }
 
-            if (count < 0 || count > chars.Length - index)
+            if (count < 0 || count > buffer.Length - index)
             {
                 throw new ArgumentOutOfRangeException(nameof(count));
             }
@@ -98,7 +91,7 @@ namespace Microsoft.CodeAnalysis.Text
                 EnsureBuffer();
                 int remaining = _buffer.Length - _currentUsed;
                 int copy = Math.Min(remaining, count);
-                Array.Copy(chars, index, _buffer, _currentUsed, copy);
+                Array.Copy(buffer, index, _buffer, _currentUsed, copy);
                 _currentUsed += copy;
                 index += copy;
                 count -= copy;

@@ -121,7 +121,7 @@ namespace System.Text
         {
             if (lazyHash.IsDefault)
             {
-                ImmutableInterlocked.InterlockedCompareExchange(ref lazyHash, ComputeHash(algorithm), default(ImmutableArray<byte>));
+                ImmutableInterlocked.InterlockedCompareExchange(ref lazyHash, ComputeHash(algorithm), default);
             }
 
             return lazyHash;
@@ -134,7 +134,7 @@ namespace System.Text
             if (stream != null)
             {
                 stream.Seek(0, SeekOrigin.Begin);
-                using (var hashProvider = SHA1.Create())
+                using (SHA1 hashProvider = SHA1.Create())
                 {
                     return ImmutableArray.Create(hashProvider.ComputeHash(stream));
                 }
@@ -150,7 +150,7 @@ namespace System.Text
 
         internal static ImmutableArray<byte> ComputeSha1(byte[] bytes)
         {
-            using (var hashProvider = SHA1.Create())
+            using (SHA1 hashProvider = SHA1.Create())
             {
                 return ImmutableArray.Create(hashProvider.ComputeHash(bytes));
             }

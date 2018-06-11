@@ -3,9 +3,9 @@ using System.IO;
 
 namespace ConsoleTester.Logging
 {
-    public class SyntaxLogger
+    public class SyntaxLogger : ILogger
     {
-        private TextWriter _writer;
+        private readonly TextWriter _writer;
 
         public SyntaxLogger(TextWriter writer)
         {
@@ -39,8 +39,6 @@ namespace ConsoleTester.Logging
             WriteLine(message);
             Console.ResetColor();
         }
-
-        private void Write(string value) => _writer.Write(value);
 
         private void WriteLine(string value) => _writer.WriteLine(value);
     }

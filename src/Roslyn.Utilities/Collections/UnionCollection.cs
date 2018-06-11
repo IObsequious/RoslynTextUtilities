@@ -8,7 +8,7 @@ using Roslyn.Utilities;
 
 namespace Microsoft.CodeAnalysis
 {
-    public class UnionCollection<T> : ICollection<T>
+    public sealed class UnionCollection<T> : ICollection<T>
     {
         private readonly ImmutableArray<ICollection<T>> _collections;
         private int _count = -1;
@@ -61,7 +61,7 @@ namespace Microsoft.CodeAnalysis
 
         public bool Contains(T item)
         {
-            foreach (var c in _collections)
+            foreach (ICollection<T> c in _collections)
             {
                 if (c.Contains(item))
                 {
@@ -75,7 +75,7 @@ namespace Microsoft.CodeAnalysis
         public void CopyTo(T[] array, int arrayIndex)
         {
             int index = arrayIndex;
-            foreach (var collection in _collections)
+            foreach (ICollection<T> collection in _collections)
             {
                 collection.CopyTo(array, index);
                 index += collection.Count;
@@ -95,13 +95,7 @@ namespace Microsoft.CodeAnalysis
             }
         }
 
-        public bool IsReadOnly
-        {
-            get
-            {
-                return true;
-            }
-        }
+        public bool IsReadOnly => true;
 
         public bool Remove(T item)
         {

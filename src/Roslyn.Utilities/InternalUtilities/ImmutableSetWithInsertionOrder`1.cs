@@ -10,6 +10,7 @@ namespace Roslyn.Utilities
     {
         public static readonly ImmutableSetWithInsertionOrder<T> Empty =
             new ImmutableSetWithInsertionOrder<T>(ImmutableDictionary.Create<T, uint>(), 0u);
+
         private readonly ImmutableDictionary<T, uint> _map;
         private readonly uint _nextElementValue;
 
@@ -44,7 +45,7 @@ namespace Roslyn.Utilities
 
         public ImmutableSetWithInsertionOrder<T> Remove(T value)
         {
-            var modifiedMap = _map.Remove(value);
+            ImmutableDictionary<T, uint> modifiedMap = _map.Remove(value);
             if (modifiedMap == _map)
             {
                 return this;

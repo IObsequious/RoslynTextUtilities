@@ -29,7 +29,7 @@ namespace Microsoft.CodeAnalysis.Collections
                 return true;
             }
 
-            value = default(R);
+            value = default;
             return false;
         }
     }

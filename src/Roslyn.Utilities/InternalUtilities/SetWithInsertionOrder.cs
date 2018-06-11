@@ -80,9 +80,9 @@ namespace Roslyn.Utilities
             }
         }
 
-        public bool Contains(T value)
+        public bool Contains(T item)
         {
-            return _set?.Contains(value) ?? false;
+            return _set?.Contains(item) ?? false;
         }
 
         public IEnumerator<T> GetEnumerator()

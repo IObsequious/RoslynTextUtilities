@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
@@ -226,12 +226,12 @@ namespace Roslyn.Utilities
 
         private static bool ShouldAppendAsUnicode(char c)
         {
-            return c < ' ' ||
-                   c >= (char) 0xfffe ||
-                   c >= (char) 0xd800 && c <= (char) 0xdfff ||
-                   c == '\u0085' ||
-                   c == '\u2028' ||
-                   c == '\u2029';
+            return c < ' '
+                   || c >= (char)0xfffe
+                   || (c >= (char)0xd800 && c <= (char)0xdfff)
+                   || c == '\u0085'
+                   || c == '\u2028'
+                   || c == '\u2029';
         }
     }
 }

@@ -32,7 +32,7 @@ namespace Roslyn.Utilities
 
         public ObjectWriter(
             Stream stream,
-            CancellationToken cancellationToken = default(CancellationToken))
+            CancellationToken cancellationToken = default)
         {
             Debug.Assert(BitConverter.IsLittleEndian);
             _writer = new BinaryWriter(stream, Encoding.UTF8);
@@ -143,7 +143,7 @@ namespace Roslyn.Utilities
 
         public void WriteValue(object value)
         {
-            Debug.Assert(value == null || !value.GetType().GetTypeInfo().IsEnum,
+            Debug.Assert(value?.GetType().GetTypeInfo().IsEnum != true,
                 message: "Enum should not be written with WriteValue.  Write them as ints instead.");
             if (value == null)
             {
@@ -284,16 +284,16 @@ namespace Roslyn.Utilities
 
         private void WriteEncodedUInt32(uint v)
         {
-            if (v >= 0 && v <= 10)
+            if (v <= 10)
             {
                 _writer.Write((byte) ((int) EncodingKind.UInt32_0 + v));
             }
-            else if (v >= 0 && v < byte.MaxValue)
+            else if (v < byte.MaxValue)
             {
                 _writer.Write((byte) EncodingKind.UInt32_1Byte);
                 _writer.Write((byte) v);
             }
-            else if (v >= 0 && v < ushort.MaxValue)
+            else if (v < ushort.MaxValue)
             {
                 _writer.Write((byte) EncodingKind.UInt32_2Bytes);
                 _writer.Write((ushort) v);
@@ -310,9 +310,11 @@ namespace Roslyn.Utilities
             private readonly Dictionary<object, int> _valueToIdMap;
             private readonly bool _valueEquality;
             private int _nextId;
+
             private static readonly ObjectPool<Dictionary<object, int>> s_referenceDictionaryPool =
                 new ObjectPool<Dictionary<object, int>>(factory: () =>
                     new Dictionary<object, int>(128, ReferenceEqualityComparer.Instance));
+
             private static readonly ObjectPool<Dictionary<object, int>> s_valueDictionaryPool =
                 new ObjectPool<Dictionary<object, int>>(factory: () => new Dictionary<object, int>(128));
 
@@ -331,11 +333,7 @@ namespace Roslyn.Utilities
             public void Dispose()
             {
                 ObjectPool<Dictionary<object, int>> pool = GetDictionaryPool(_valueEquality);
-                if (_valueToIdMap.Count > 1024)
-                {
-                    pool.ForgetTrackedObject(_valueToIdMap);
-                }
-                else
+                if (_valueToIdMap.Count <= 1024)
                 {
                     _valueToIdMap.Clear();
                     pool.Free(_valueToIdMap);

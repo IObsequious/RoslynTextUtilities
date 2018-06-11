@@ -36,14 +36,11 @@ namespace Microsoft.CodeAnalysis
 
         public abstract string GetMessagePrefix(string id, DiagnosticSeverity severity, bool isWarningAsError, CultureInfo culture);
 
-
         public string GetIdForErrorCode(int errorCode)
         {
             return CodePrefix + errorCode.ToString("0000");
         }
 
         public abstract ReportDiagnostic GetDiagnosticReport(DiagnosticInfo diagnosticInfo);
-
- 
     }
 }

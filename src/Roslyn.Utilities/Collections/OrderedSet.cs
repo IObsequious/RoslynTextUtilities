@@ -42,13 +42,7 @@ namespace Microsoft.CodeAnalysis.Collections
             return false;
         }
 
-        public int Count
-        {
-            get
-            {
-                return _list.Count;
-            }
-        }
+        public int Count => _list.Count;
 
         public bool Contains(T item)
         {

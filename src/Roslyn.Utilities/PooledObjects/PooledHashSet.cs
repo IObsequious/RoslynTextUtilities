@@ -3,7 +3,7 @@ using System.Diagnostics;
 
 namespace Microsoft.CodeAnalysis.PooledObjects
 {
-    public class PooledHashSet<T> : HashSet<T>
+    public sealed class PooledHashSet<T> : HashSet<T>
     {
         private readonly ObjectPool<PooledHashSet<T>> _pool;
 
@@ -23,8 +23,7 @@ namespace Microsoft.CodeAnalysis.PooledObjects
         public static ObjectPool<PooledHashSet<T>> CreatePool()
         {
             ObjectPool<PooledHashSet<T>> pool = null;
-            pool = new ObjectPool<PooledHashSet<T>>(factory: () => new PooledHashSet<T>(pool), size: 128);
-            return pool;
+            return new ObjectPool<PooledHashSet<T>>(factory: () => new PooledHashSet<T>(pool), size: 128);
         }
 
         public static PooledHashSet<T> GetInstance()

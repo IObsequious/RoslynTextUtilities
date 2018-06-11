@@ -11,7 +11,7 @@ namespace Microsoft.CodeAnalysis.PooledObjects
 {
     public class ObjectPool<T> where T : class
     {
-        [DebuggerDisplay(value: "{Value,nq}")]
+        [DebuggerDisplay(value: "{" + nameof(Value) + ",nq}")]
         private struct Element
         {
             internal T Value;
@@ -121,7 +121,6 @@ namespace Microsoft.CodeAnalysis.PooledObjects
         public void Free(T obj)
         {
             Validate(obj);
-            ForgetTrackedObject(obj);
             if (_firstItem == null)
             {
                 _firstItem = obj;
@@ -144,38 +143,6 @@ namespace Microsoft.CodeAnalysis.PooledObjects
                 }
             }
         }
-
-        [Conditional(conditionString: "DEBUG")]
-        public void ForgetTrackedObject(T old, T replacement = null)
-        {
-#if DETECT_LEAKS
-            LeakTracker tracker;
-            if (leakTrackers.TryGetValue(old, out tracker))
-            {
-                tracker.Dispose();
-                leakTrackers.Remove(old);
-            }
-            else
-            {
-                var trace = CaptureStackTrace();
-                Debug.WriteLine($"TRACEOBJECTPOOLLEAKS_BEGIN\nObject of type {typeof(T)} was freed, but was not from pool. \n Callstack: \n {trace} TRACEOBJECTPOOLLEAKS_END");
-            }
-
-            if (replacement != null)
-            {
-                tracker = new LeakTracker();
-                leakTrackers.Add(replacement, tracker);
-            }
-#endif
-        }
-#if DETECT_LEAKS
-        private static Lazy<Type> _stackTraceType = new Lazy<Type>(() => Type.GetType("System.Diagnostics.StackTrace"));
-
-        private static object CaptureStackTrace()
-        {
-            return Activator.CreateInstance(_stackTraceType.Value);
-        }
-#endif
 
         [Conditional(conditionString: "DEBUG")]
         private void Validate(object obj)

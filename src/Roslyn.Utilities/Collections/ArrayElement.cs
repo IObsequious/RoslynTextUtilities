@@ -2,7 +2,7 @@
 
 namespace Microsoft.CodeAnalysis
 {
-    [DebuggerDisplay(value: "{Value,nq}")]
+    [DebuggerDisplay("{" + nameof(Value) + ",nq}")]
     public struct ArrayElement<T>
     {
         public T Value;

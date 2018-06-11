@@ -6,29 +6,21 @@ using Roslyn.Utilities;
 
 namespace Microsoft.CodeAnalysis
 {
-    [DebuggerDisplay("{GetDebuggerDisplay(), nq}")]
+    [DebuggerDisplay("{" + nameof(GetDebuggerDisplay) + "(), nq}")]
     public class DiagnosticWithInfo : Diagnostic
     {
         private readonly DiagnosticInfo _info;
-        private readonly Location _location;
-        private readonly bool _isSuppressed;
 
         public DiagnosticWithInfo(DiagnosticInfo info, Location location, bool isSuppressed = false)
         {
             Debug.Assert(info != null);
             Debug.Assert(location != null);
             _info = info;
-            _location = location;
-            _isSuppressed = isSuppressed;
+            Location = location;
+            IsSuppressed = isSuppressed;
         }
 
-        public override Location Location
-        {
-            get
-            {
-                return _location;
-            }
-        }
+        public override Location Location { get; }
 
         public override IReadOnlyList<Location> AdditionalLocations
         {
@@ -102,13 +94,7 @@ namespace Microsoft.CodeAnalysis
             }
         }
 
-        public override bool IsSuppressed
-        {
-            get
-            {
-                return _isSuppressed;
-            }
-        }
+        public override bool IsSuppressed { get; }
 
         public sealed override int WarningLevel
         {
@@ -148,8 +134,8 @@ namespace Microsoft.CodeAnalysis
         {
             get
             {
-                return _info.Severity == InternalDiagnosticSeverity.Unknown ||
-                       _info.Severity == InternalDiagnosticSeverity.Void;
+                return _info.Severity == InternalDiagnosticSeverity.Unknown
+                       || _info.Severity == InternalDiagnosticSeverity.Void;
             }
         }
 
@@ -163,23 +149,23 @@ namespace Microsoft.CodeAnalysis
             return Equals(obj as Diagnostic);
         }
 
-        public override bool Equals(Diagnostic obj)
+        public override bool Equals(Diagnostic other)
         {
-            if (this == obj)
+            if (Equals(this, other))
             {
                 return true;
             }
 
-            DiagnosticWithInfo other = obj as DiagnosticWithInfo;
-            if (other == null || GetType() != other.GetType())
+            DiagnosticWithInfo o = other as DiagnosticWithInfo;
+            if (o == null || GetType() != o.GetType())
             {
                 return false;
             }
 
             return
-                Location.Equals(other._location) &&
-                Info.Equals(other.Info) &&
-                AdditionalLocations.SequenceEqual(other.AdditionalLocations);
+                Location.Equals(o.Location)
+                && Info.Equals(o.Info)
+                && AdditionalLocations.SequenceEqual(other.AdditionalLocations);
         }
 
         private string GetDebuggerDisplay()
@@ -202,9 +188,9 @@ namespace Microsoft.CodeAnalysis
                 throw new ArgumentNullException(nameof(location));
             }
 
-            if (location != _location)
+            if (location != Location)
             {
-                return new DiagnosticWithInfo(_info, location, _isSuppressed);
+                return new DiagnosticWithInfo(_info, location, IsSuppressed);
             }
 
             return this;
@@ -214,7 +200,7 @@ namespace Microsoft.CodeAnalysis
         {
             if (Severity != severity)
             {
-                return new DiagnosticWithInfo(Info.GetInstanceWithSeverity(severity), _location, _isSuppressed);
+                return new DiagnosticWithInfo(Info.GetInstanceWithSeverity(severity), Location, IsSuppressed);
             }
 
             return this;
@@ -224,7 +210,7 @@ namespace Microsoft.CodeAnalysis
         {
             if (IsSuppressed != isSuppressed)
             {
-                return new DiagnosticWithInfo(Info, _location, isSuppressed);
+                return new DiagnosticWithInfo(Info, Location, isSuppressed);
             }
 
             return this;

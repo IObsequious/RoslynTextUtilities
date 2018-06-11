@@ -10,7 +10,7 @@ namespace Roslyn.Utilities
     {
         public static int Combine(int newKey, int currentKey)
         {
-            return unchecked(currentKey * (int) 0xA5555529 + newKey);
+            return unchecked((currentKey * (int) 0xA5555529) + newKey);
         }
 
         public static int Combine(bool newKeyPart, int currentKey)
@@ -45,7 +45,7 @@ namespace Roslyn.Utilities
                     break;
                 }
 
-                if (value != null)
+                if (!EqualityComparer<T>.Default.Equals(value, default))
                 {
                     hashCode = Combine(value.GetHashCode(), hashCode);
                 }
@@ -66,7 +66,7 @@ namespace Roslyn.Utilities
             for (int i = 0; i < maxSize; i++)
             {
                 T value = values[i];
-                if (value != null)
+                if (!EqualityComparer<T>.Default.Equals(value, default))
                 {
                     hashCode = Combine(value.GetHashCode(), hashCode);
                 }
@@ -84,14 +84,14 @@ namespace Roslyn.Utilities
 
             int hashCode = 0;
             int count = 0;
-            foreach (var value in values)
+            foreach (T value in values)
             {
                 if (count++ >= maxItemsToHash)
                 {
                     break;
                 }
 
-                if (value != null)
+                if (!EqualityComparer<T>.Default.Equals(value, default))
                 {
                     hashCode = Combine(value.GetHashCode(), hashCode);
                 }

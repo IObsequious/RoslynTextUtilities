@@ -47,8 +47,7 @@ namespace Roslyn.Utilities
         private static ObjectPool<StringTable> CreatePool()
         {
             ObjectPool<StringTable> pool = null;
-            pool = new ObjectPool<StringTable>(factory: () => new StringTable(pool), size: Environment.ProcessorCount * 2);
-            return pool;
+            return new ObjectPool<StringTable>(factory: () => new StringTable(pool), size: Environment.ProcessorCount * 2);
         }
 
         public static StringTable GetInstance()
@@ -421,7 +420,7 @@ namespace Roslyn.Utilities
             }
 
             int i1 = LocalNextRandom() & SharedBucketSizeMask;
-            idx = (idx + (i1 * i1 + i1) / 2) & SharedSizeMask;
+            idx = (idx + (((i1 * i1) + i1) / 2)) & SharedSizeMask;
             foundIdx:
             arr[idx].HashCode = hashCode;
             Volatile.Write(ref arr[idx].Text, text);
@@ -431,12 +430,7 @@ namespace Roslyn.Utilities
         {
             int hashCode = Hash.GetFNVHashCode(chars);
             string shared = FindSharedEntry(chars, hashCode);
-            if (shared != null)
-            {
-                return shared;
-            }
-
-            return AddSharedSlow(hashCode, chars);
+            return shared ?? AddSharedSlow(hashCode, chars);
         }
 
         private static string AddSharedSlow(int hashCode, StringBuilder builder)
@@ -448,8 +442,7 @@ namespace Roslyn.Utilities
 
         public static unsafe string AddSharedUTF8(byte* bytes, int byteCount)
         {
-            bool isAscii;
-            int hashCode = Hash.GetFNVHashCode(bytes, byteCount, out isAscii);
+            int hashCode = Hash.GetFNVHashCode(bytes, byteCount, out bool isAscii);
             if (isAscii)
             {
                 string shared = FindSharedEntryASCII(hashCode, bytes, byteCount);
@@ -490,7 +483,7 @@ namespace Roslyn.Utilities
             }
 
             int i1 = SharedNextRandom() & SharedBucketSizeMask;
-            idx = (idx + (i1 * i1 + i1) / 2) & SharedSizeMask;
+            idx = (idx + (((i1 * i1) + i1) / 2)) & SharedSizeMask;
             foundIdx:
             arr[idx].HashCode = hashCode;
             Volatile.Write(ref arr[idx].Text, text);

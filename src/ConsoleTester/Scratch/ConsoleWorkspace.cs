@@ -40,7 +40,9 @@ namespace ConsoleTester.Scratch
             return document;
         }
 
-        public Solution CreateSolution(string solutionDirectory, string solutionName, bool saveToDisk)
+        public Solution CreateSolution(
+            string solutionDirectory,
+            string solutionName)
         {
             Solution solution = CreateSolution(CreateSolutionInfo(solutionDirectory, solutionName));
             return SetCurrentSolution(solution);
@@ -103,19 +105,13 @@ namespace ConsoleTester.Scratch
                     null,
                     OptimizationLevel.Debug,
                     false,
-                    true,
-                    null,
-                    null).WithStrongNameProvider(new DesktopStrongNameProvider()),
+                    true).WithStrongNameProvider(new DesktopStrongNameProvider()),
                 new CSharpParseOptions(
                     LanguageVersion.CSharp7,
-                    DocumentationMode.None,
-                    SourceCodeKind.Regular),
+                    DocumentationMode.None),
                 documents,
                 null,
-                _references,
-                null,
-                null,
-                false);
+                _references);
             return projectInfo;
         }
 
@@ -175,9 +171,6 @@ namespace ConsoleTester.Scratch
         public Solution CreateConsoleSolution(string solutionDirectoryName, string solutionName)
         {
             Solution currentSolution = CurrentSolution;
-
-
-
             ProjectInfo projectInfo1 = CreateProjectInfo(solutionDirectoryName, "Project1");
             DocumentInfo document1 = CreateDocumentInfo(
                 projectInfo1,

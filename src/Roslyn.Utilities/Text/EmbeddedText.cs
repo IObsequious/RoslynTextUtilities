@@ -35,19 +35,6 @@ namespace Microsoft.CodeAnalysis
 
         internal ImmutableArray<byte> Blob { get; }
 
-        private static void ValidateFilePath(string filePath)
-        {
-            if (filePath == null)
-            {
-                throw new ArgumentNullException(nameof(filePath));
-            }
-
-            if (filePath.Length == 0)
-            {
-                throw new ArgumentException(CodeAnalysisResources.ArgumentCannotBeEmpty, nameof(filePath));
-            }
-        }
-
         private sealed class CountingDeflateStream : DeflateStream
         {
             public CountingDeflateStream(Stream stream, CompressionLevel compressionLevel, bool leaveOpen)
@@ -73,8 +60,6 @@ namespace Microsoft.CodeAnalysis
                 {
                     BytesWritten++;
                 }
-
-                ;
             }
 
             public override Task WriteAsync(byte[] buffer, int offset, int count, CancellationToken cancellationToken)

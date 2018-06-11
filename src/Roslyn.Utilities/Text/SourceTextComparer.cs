@@ -1,4 +1,5 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.Collections.Immutable;
 using Roslyn.Utilities;
 
 namespace Microsoft.CodeAnalysis.Text
@@ -24,9 +25,11 @@ namespace Microsoft.CodeAnalysis.Text
 
         public int GetHashCode(SourceText obj)
         {
-            var checksum = obj.GetChecksum();
+            ImmutableArray<byte> checksum = obj.GetChecksum();
             int contentsHash = !checksum.IsDefault ? Hash.CombineValues(checksum) : 0;
-            int encodingHash = obj.Encoding != null ? obj.Encoding.GetHashCode() : 0;
+            int encodingHash = obj
+                .Encoding?
+                .GetHashCode() ?? 0;
             return Hash.Combine(obj.Length,
                 Hash.Combine(contentsHash,
                     Hash.Combine(encodingHash, obj.ChecksumAlgorithm.GetHashCode())));

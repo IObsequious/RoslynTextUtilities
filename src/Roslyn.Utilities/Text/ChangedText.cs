@@ -164,14 +164,14 @@ namespace Microsoft.CodeAnalysis.Text
 
             if (IsChangedFrom(oldText))
             {
-                var changes = GetChangesBetween(oldText, this);
+                IReadOnlyList<ImmutableArray<TextChangeRange>> changes = GetChangesBetween(oldText, this);
                 if (changes.Count > 1)
                 {
                     return Merge(changes);
                 }
             }
 
-            if (actualOldText != null && actualOldText.GetChangeRanges(oldText).Count == 0)
+            if (actualOldText?.GetChangeRanges(oldText).Count == 0)
             {
                 return _info.ChangeRanges;
             }
@@ -195,7 +195,7 @@ namespace Microsoft.CodeAnalysis.Text
 
         private static IReadOnlyList<ImmutableArray<TextChangeRange>> GetChangesBetween(SourceText oldText, ChangedText newText)
         {
-            var list = new List<ImmutableArray<TextChangeRange>>();
+            List<ImmutableArray<TextChangeRange>> list = new List<ImmutableArray<TextChangeRange>>();
             ChangeInfo change = newText._info;
             list.Add(change.ChangeRanges);
             while (change != null)
@@ -221,7 +221,7 @@ namespace Microsoft.CodeAnalysis.Text
         private static ImmutableArray<TextChangeRange> Merge(IReadOnlyList<ImmutableArray<TextChangeRange>> changeSets)
         {
             Debug.Assert(changeSets.Count > 1);
-            var merged = changeSets[0];
+            ImmutableArray<TextChangeRange> merged = changeSets[0];
             for (int i = 1; i < changeSets.Count; i++)
             {
                 merged = Merge(merged, changeSets[i]);
@@ -240,11 +240,11 @@ namespace Microsoft.CodeAnalysis.Text
             nextNewChange:
             if (newIndex < newChanges.Length)
             {
-                var newChange = newChanges[newIndex];
+                TextChangeRange newChange = newChanges[newIndex];
                 nextOldChange:
                 if (oldIndex < oldChanges.Length)
                 {
-                    var oldChange = oldChanges[oldIndex];
+                    TextChangeRange oldChange = oldChanges[oldIndex];
                     tryAgain:
                     if (oldChange.Span.Length == 0 && oldChange.NewLength == 0)
                     {
@@ -316,7 +316,7 @@ namespace Microsoft.CodeAnalysis.Text
                             goto nextNewChange;
                         }
 
-                        var oldChangeReduction = Math.Min(oldChange.NewLength, newChange.Span.Length);
+                        int oldChangeReduction = Math.Min(oldChange.NewLength, newChange.Span.Length);
                         AddRange(list, new TextChangeRange(oldChange.Span, oldChange.NewLength - oldChangeReduction));
                         oldDelta = oldDelta - oldChange.Span.Length + (oldChange.NewLength - oldChangeReduction);
                         oldIndex++;
@@ -379,7 +379,7 @@ namespace Microsoft.CodeAnalysis.Text
             int position = 0;
             int delta = 0;
             bool endsWithCR = false;
-            foreach (var change in _info.ChangeRanges)
+            foreach (TextChangeRange change in _info.ChangeRanges)
             {
                 if (change.Span.Start > position)
                 {

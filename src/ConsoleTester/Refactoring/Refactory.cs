@@ -35,6 +35,8 @@ namespace ConsoleTester.Refactoring
         private static readonly SyntaxAnnotation[] _renameAnnotationArray = new SyntaxAnnotation[] { RenameAnnotation.Create() };
         private static readonly SyntaxAnnotation[] _formatterAndSimplifierAnnotationArray = new SyntaxAnnotation[] { Formatter.Annotation, Simplifier.Annotation };
 
+        private static readonly ILogger Logger = new SyntaxLogger(Console.Out);
+
         private static SymbolDisplayFormat DefaultSymbolDisplayFormat { get; } = new SymbolDisplayFormat(
             genericsOptions: SymbolDisplayGenericsOptions.IncludeTypeParameters,
             typeQualificationStyle: SymbolDisplayTypeQualificationStyle.NameAndContainingTypesAndNamespaces,
@@ -54,7 +56,7 @@ namespace ConsoleTester.Refactoring
             SymbolDisplayKindOptions.None,
             SymbolDisplayMiscellaneousOptions.EscapeKeywordIdentifiers);
 
-        public static async Task<Document> RefactorAsync(Document document, CancellationToken cancellationToken = default(CancellationToken))
+        public static async Task<Document> RefactorAsync(Document document, CancellationToken cancellationToken = default)
         {
             Logger.LogInformation($"Processing document {document.Name}...");
             // document = await SetPublicAccessibility(document, cancellationToken).ConfigureAwait(false);
@@ -63,17 +65,17 @@ namespace ConsoleTester.Refactoring
             document = await RemoveEmptyLinesAsync(document, cancellationToken).ConfigureAwait(false);
             document = await BlankLineBetweenMembersAsync(document, cancellationToken).ConfigureAwait(false);
 
-            document = await Formatter.FormatAsync(document, FormattingOptions, cancellationToken);
+            document = await Formatter.FormatAsync(document, FormattingOptions, cancellationToken).ConfigureAwait(false);
 
             //document = await FormatDocumentAsync(document, cancellationToken).ConfigureAwait(false);
             Logger.LogInformation("");
             return document;
         }
 
-        public static async Task<Document> FixAsync(Document document, CancellationToken cancellationToken = default(CancellationToken))
+        public static async Task<Document> FixAsync(Document document, CancellationToken cancellationToken = default)
         {
             Logger.LogWarning($"    FixAsync => {document.Name}");
-            SemanticDocument semanticDocument = await SemanticDocument.CreateAsync(document, cancellationToken);
+            SemanticDocument semanticDocument = await SemanticDocument.CreateAsync(document, cancellationToken).ConfigureAwait(false);
 
             CompilationUnitSyntax newRoot = semanticDocument.CompilationUnitRoot;
 
@@ -91,8 +93,7 @@ namespace ConsoleTester.Refactoring
 
             newRoot = newRoot.ReplaceNode(firstNamespace, newNamespace);
 
-            return await Formatter.FormatAsync(document.WithSyntaxRoot(newRoot.AddUsings(SyntaxFactory.UsingDirective(SyntaxFactory.IdentifierName("System.Collections.Generic")))), FormattingOptions, cancellationToken);
-
+            return await Formatter.FormatAsync(document.WithSyntaxRoot(newRoot.AddUsings(SyntaxFactory.UsingDirective(SyntaxFactory.IdentifierName("System.Collections.Generic")))), FormattingOptions, cancellationToken).ConfigureAwait(false);
         }
 
         private static BaseTypeDeclarationSyntax CreateBaseTypeDeclaration(INamedTypeSymbol symbol)
@@ -104,7 +105,7 @@ namespace ConsoleTester.Refactoring
                 ClassDeclarationSyntax node = SyntaxFactory.ClassDeclaration(symbol.Name);
                 node = node.AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword), SyntaxFactory.Token(SyntaxKind.PartialKeyword));
 
-                var members = symbol.GetMembers().OfType<IPropertySymbol>().ToImmutableArray();
+                ImmutableArray<IPropertySymbol> members = symbol.GetMembers().OfType<IPropertySymbol>().ToImmutableArray();
                 for (int i = 0; i < members.Length; i++)
                 {
                     IPropertySymbol member = members[i];
@@ -173,7 +174,7 @@ namespace ConsoleTester.Refactoring
             if (node == null)
                 throw new ArgumentNullException(nameof(node));
 
-            var remover = new CommentRemover(node, span);
+            CommentRemover remover = new CommentRemover(node, span);
 
             return (TNode)remover.Visit(node);
         }
@@ -191,35 +192,34 @@ namespace ConsoleTester.Refactoring
         }
 
         private static readonly SyntaxAnnotation _removeAnnotation = new SyntaxAnnotation();
+
         private static readonly SymbolDisplayFormat _symbolDisplayFormat = new SymbolDisplayFormat(
             miscellaneousOptions: SymbolDisplayMiscellaneousOptions.EscapeKeywordIdentifiers);
 
-        private static int ii = 0;
         private static int jj = 0;
         private static int kk = 0;
 
-        public static async Task<Document> UseAutoProperty(
+        public static async Task<Document> UseAutoPropertyAsync(
             Document document,
             CancellationToken cancellationToken)
         {
             Logger.LogWarning($"    Use AutoProperty => {document.Name}");
-            SemanticDocument semanticDocument = await SemanticDocument.CreateAsync(document, cancellationToken);
+            SemanticDocument semanticDocument = await SemanticDocument.CreateAsync(document, cancellationToken).ConfigureAwait(false);
 
             top:
 
             SyntaxNode newRoot = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
 
-            SemanticModel semanticModel = await document.GetSemanticModelAsync(cancellationToken);
+            SemanticModel semanticModel = await document.GetSemanticModelAsync(cancellationToken).ConfigureAwait(false);
 
             NamespaceDeclarationSyntax[] namespaces = newRoot.DescendantNodes(_ => true).OfType<NamespaceDeclarationSyntax>().ToArray();
 
-            NamespaceDeclarationSyntax firstNamespace = namespaces.First();
+            NamespaceDeclarationSyntax firstNamespace = namespaces[0];
 
             TypeDeclarationSyntax[] types = firstNamespace.DescendantNodes(_ => true).OfType<TypeDeclarationSyntax>().ToArray();
 
             for (int j = jj; j < types.Length; j++)
             {
-
                 TypeDeclarationSyntax typeDeclaration = types[j];
 
                 INamedTypeSymbol namedTypeSymbol = semanticModel.GetDeclaredSymbol(typeDeclaration);
@@ -228,14 +228,9 @@ namespace ConsoleTester.Refactoring
 
                 PropertyDeclarationSyntax[] properties = typeDeclaration.Members.OfType<PropertyDeclarationSyntax>().ToArray();
 
-
-
-
                 for (int k = kk; k < properties.Length; k++)
                 {
                     PropertyDeclarationSyntax property = properties[k];
-
-
 
                     IPropertySymbol propertySymbol = semanticModel.GetDeclaredSymbol(property);
 
@@ -258,12 +253,10 @@ namespace ConsoleTester.Refactoring
                     }
 
                     goto top;
-
                 }
 
                 jj++;
             }
-
 
             return document.WithSyntaxRoot(newRoot);
         }
@@ -308,8 +301,7 @@ namespace ConsoleTester.Refactoring
             }
         }
 
-
-        public static async Task<Document> SetPublicAccessibility(Document document, CancellationToken cancellationToken = new CancellationToken())
+        public static async Task<Document> SetPublicAccessibilityAsync(Document document, CancellationToken cancellationToken = new CancellationToken())
         {
             Logger.LogWarning($"    Set Public Accessibility => {document.Name}");
             SyntaxNode root = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
@@ -328,16 +320,15 @@ namespace ConsoleTester.Refactoring
             Logger.LogWarning($"    Remove comments => {document.Name}");
             SyntaxNode root = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
             return document.WithSyntaxRoot(RemoveComments(root));
-
         }
 
-        public static async Task<Document> FormatDocumentAsync(Document document, CancellationToken cancellationToken = new CancellationToken())
+        public static Task<Document> FormatDocumentAsync(Document document, CancellationToken cancellationToken = new CancellationToken())
         {
-
             Logger.LogWarning($"    Format document => {document.Name}");
 
-            return await FormattingVisitor.FormatAsync(document, cancellationToken);
+            return FormattingVisitor.FormatAsync(document, cancellationToken);
         }
+
         public static async Task<Document> RemoveEmptyLinesAsync(Document document, CancellationToken cancellationToken = new CancellationToken())
         {
             Logger.LogWarning($"    Remove Empty Lines => {document.Name}");
@@ -382,11 +373,12 @@ namespace ConsoleTester.Refactoring
 
             return propertyDeclaration.AccessorList?.Setter();
         }
+
         public static async Task<Document> ReplaceNodeAsync(
             this Document document,
             SyntaxNode oldNode,
             SyntaxNode newNode,
-            CancellationToken cancellationToken = default(CancellationToken))
+            CancellationToken cancellationToken = default)
         {
             if (document == null)
                 throw new ArgumentNullException(nameof(document));
@@ -462,9 +454,8 @@ namespace ConsoleTester.Refactoring
         }
         #endregion AccessorListSyntax
 
+        private static readonly SyntaxLogger ILogger = new SyntaxLogger(Console.Out);
 
-
-        private static readonly SyntaxLogger Logger = new SyntaxLogger(Console.Out);
         public static OptionSet FormattingOptions
         {
             get
@@ -483,13 +474,9 @@ namespace ConsoleTester.Refactoring
                 options = options.WithChangedOption(CSharpFormattingOptions.NewLinesForBracesInMethods, true);
                 options = options.WithChangedOption(CSharpFormattingOptions.WrappingKeepStatementsOnSingleLine, true);
                 options = options.WithChangedOption(CSharpFormattingOptions.WrappingPreserveSingleLine, true);
-                options = options.WithChangedOption(CSharpFormattingOptions.NewLineForMembersInObjectInit, true);
-
-                return options;
+                return options.WithChangedOption(CSharpFormattingOptions.NewLineForMembersInObjectInit, true);
             }
         }
-
-
 
         private static IEnumerable<TextLine> GetEmptyLines(SourceText sourceText, SyntaxNode root, TextSpan span)
         {

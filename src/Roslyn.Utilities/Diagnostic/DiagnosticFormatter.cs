@@ -40,7 +40,6 @@ namespace Microsoft.CodeAnalysis
             }
 
             return string.Empty;
-
         }
 
         public virtual string FormatSourcePath(string path, string basePath, IFormatProvider formatter)

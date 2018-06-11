@@ -10,28 +10,21 @@ namespace Roslyn.Utilities
         {
             public class Enumerator<T> : IEnumerator<T>
             {
-                private readonly T _loneValue;
                 private bool _moveNextCalled;
 
                 public Enumerator(T value)
                 {
-                    _loneValue = value;
+                    Current = value;
                     _moveNextCalled = false;
                 }
 
-                public T Current
-                {
-                    get
-                    {
-                        return _loneValue;
-                    }
-                }
+                public T Current { get; }
 
                 object IEnumerator.Current
                 {
                     get
                     {
-                        return _loneValue;
+                        return Current;
                     }
                 }
 
@@ -158,7 +151,7 @@ namespace Roslyn.Utilities
             }
         }
 
-        private partial class ReadOnly
+        private static partial class ReadOnly
         {
             public class Set<TUnderlying, T> : Collection<TUnderlying, T>, ISet<T>, IReadOnlySet<T>
                 where TUnderlying : ISet<T>
@@ -225,7 +218,7 @@ namespace Roslyn.Utilities
             }
         }
 
-        private partial class ReadOnly
+        private static partial class ReadOnly
         {
             public class Enumerable<TUnderlying, T> : Enumerable<TUnderlying>, IEnumerable<T>
                 where TUnderlying : IEnumerable<T>
@@ -242,7 +235,7 @@ namespace Roslyn.Utilities
             }
         }
 
-        private partial class ReadOnly
+        private static partial class ReadOnly
         {
             public class Enumerable<TUnderlying> : IEnumerable
                 where TUnderlying : IEnumerable
@@ -314,7 +307,7 @@ namespace Roslyn.Utilities
             }
         }
 
-        private partial class Empty
+        private static partial class Empty
         {
             public class Set<T> : Collection<T>, ISet<T>, IReadOnlySet<T>
             {
@@ -381,7 +374,7 @@ namespace Roslyn.Utilities
             }
         }
 
-        private partial class Empty
+        private static partial class Empty
         {
             public class List<T> : Collection<T>, IList<T>, IReadOnlyList<T>
             {
@@ -420,7 +413,7 @@ namespace Roslyn.Utilities
             }
         }
 
-        private partial class Empty
+        private static partial class Empty
         {
             public class Enumerator<T> : Enumerator, IEnumerator<T>
             {
@@ -444,7 +437,7 @@ namespace Roslyn.Utilities
             }
         }
 
-        private partial class Empty
+        private static partial class Empty
         {
             public class Enumerator : IEnumerator
             {
@@ -474,7 +467,7 @@ namespace Roslyn.Utilities
             }
         }
 
-        private partial class Empty
+        private static partial class Empty
         {
             public class Enumerable<T> : IEnumerable<T>
             {
@@ -492,9 +485,9 @@ namespace Roslyn.Utilities
             }
         }
 
-        private partial class Empty
+        private static partial class Empty
         {
-            public class Dictionary<TKey, TValue> : Collection<KeyValuePair<TKey, TValue>>,
+            public sealed class Dictionary<TKey, TValue> : Collection<KeyValuePair<TKey, TValue>>,
                 IDictionary<TKey, TValue>,
                 IReadOnlyDictionary<TKey, TValue>
             {
@@ -545,7 +538,7 @@ namespace Roslyn.Utilities
 
                 public bool TryGetValue(TKey key, out TValue value)
                 {
-                    value = default(TValue);
+                    value = default;
                     return false;
                 }
 

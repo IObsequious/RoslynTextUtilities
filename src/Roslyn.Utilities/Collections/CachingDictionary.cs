@@ -31,33 +31,15 @@ namespace Microsoft.CodeAnalysis.Collections
             return this[key].Length != 0;
         }
 
-        public ImmutableArray<TElement> this[TKey key]
-        {
-            get
-            {
-                return GetOrCreateValue(key);
-            }
-        }
+        public ImmutableArray<TElement> this[TKey key] => GetOrCreateValue(key);
 
-        public int Count
-        {
-            get
-            {
-                return EnsureFullyPopulated().Count;
-            }
-        }
+        public int Count => EnsureFullyPopulated().Count;
 
-        public IEnumerable<TKey> Keys
-        {
-            get
-            {
-                return EnsureFullyPopulated().Keys;
-            }
-        }
+        public IEnumerable<TKey> Keys => EnsureFullyPopulated().Keys;
 
         public void AddValues(ArrayBuilder<TElement> array)
         {
-            foreach (var kvp in EnsureFullyPopulated())
+            foreach (KeyValuePair<TKey, ImmutableArray<TElement>> kvp in EnsureFullyPopulated())
             {
                 array.AddRange(kvp.Value);
             }
@@ -77,7 +59,7 @@ namespace Microsoft.CodeAnalysis.Collections
         {
             ImmutableArray<TElement> elements;
             ConcurrentDictionary<TKey, ImmutableArray<TElement>> concurrentMap;
-            var localMap = _map;
+            IDictionary<TKey, ImmutableArray<TElement>> localMap = _map;
             if (localMap == null)
             {
                 concurrentMap = CreateConcurrentDictionary();
@@ -99,7 +81,7 @@ namespace Microsoft.CodeAnalysis.Collections
 
         private ImmutableArray<TElement> AddToConcurrentMap(ConcurrentDictionary<TKey, ImmutableArray<TElement>> map, TKey key)
         {
-            var elements = _getElementsOfKey(key);
+            ImmutableArray<TElement> elements = _getElementsOfKey(key);
             if (elements.IsDefaultOrEmpty)
             {
                 elements = s_emptySentinel;
@@ -118,7 +100,7 @@ namespace Microsoft.CodeAnalysis.Collections
             Debug.Assert(IsNotFullyPopulatedMap(existingMap));
             HashSet<TKey> allKeys = _getKeys(_comparer);
             Debug.Assert(_comparer == allKeys.Comparer);
-            var fullyPopulatedMap = CreateDictionaryForFullyPopulatedMap(allKeys.Count);
+            IDictionary<TKey, ImmutableArray<TElement>> fullyPopulatedMap = CreateDictionaryForFullyPopulatedMap(allKeys.Count);
             if (existingMap == null)
             {
                 foreach (TKey key in allKeys)
@@ -147,7 +129,7 @@ namespace Microsoft.CodeAnalysis.Collections
         private IDictionary<TKey, ImmutableArray<TElement>> EnsureFullyPopulated()
         {
             IDictionary<TKey, ImmutableArray<TElement>> fullyPopulatedMap = null;
-            var currentMap = _map;
+            IDictionary<TKey, ImmutableArray<TElement>> currentMap = _map;
             while (IsNotFullyPopulatedMap(currentMap))
             {
                 if (fullyPopulatedMap == null)
@@ -155,7 +137,8 @@ namespace Microsoft.CodeAnalysis.Collections
                     fullyPopulatedMap = CreateFullyPopulatedMap(currentMap);
                 }
 
-                var replacedMap = Interlocked.CompareExchange(ref _map, fullyPopulatedMap, currentMap);
+                IDictionary<TKey, ImmutableArray<TElement>> replacedMap =
+                    Interlocked.CompareExchange(ref _map, fullyPopulatedMap, currentMap);
                 if (replacedMap == currentMap)
                 {
                     return fullyPopulatedMap;

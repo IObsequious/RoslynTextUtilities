@@ -15,9 +15,6 @@ namespace ConsoleTester.Scratch
 {
     public class CSharpFormatter : CSharpSyntaxRewriter
     {
-
-        private bool _first;
-        private bool _second;
         public CSharpFormatter(bool visitIntoStructuredTrivia = true) : base(visitIntoStructuredTrivia)
         {
         }
@@ -31,11 +28,9 @@ namespace ConsoleTester.Scratch
 
             newNode = (TNode) Formatter.Format(newNode, Formatter.Annotation, workspace);
 
-            newNode = (TNode) formatter.Visit(newNode);
-
-            return newNode;
-
+            return (TNode) formatter.Visit(newNode);
         }
+
         public static async Task<TNode> FormatAsync<TNode>(TNode node) where TNode: SyntaxNode
         {
             AdhocWorkspace workspace = new AdhocWorkspace();
@@ -60,11 +55,11 @@ namespace ConsoleTester.Scratch
             DocumentId documentId = DocumentId.CreateNewId(project.Id);
             Document document = solution.AddDocument(documentId, "Node.cs", node).GetDocument(documentId);
 
-            document = await FormatAsync(document, CancellationToken.None);
+            document = await FormatAsync(document, CancellationToken.None).ConfigureAwait(false);
 
             document = await Formatter.FormatAsync(document,Formatter.Annotation,options).ConfigureAwait(false);
 
-            return (TNode) await document.GetSyntaxRootAsync();
+            return (TNode) await document.GetSyntaxRootAsync().ConfigureAwait(false);
         }
 
         public static async Task<Document> FormatAsync(Document document, CancellationToken cancellationToken = new CancellationToken())
@@ -117,20 +112,19 @@ namespace ConsoleTester.Scratch
                 case SyntaxKind.SingleLineDocumentationCommentTrivia:
                 case SyntaxKind.MultiLineCommentTrivia:
                 case SyntaxKind.SingleLineCommentTrivia:
-                    return default(SyntaxTrivia);
+                    return default;
                 case SyntaxKind.EndOfLineTrivia:
                     return trivia.WithAdditionalAnnotations(Formatter.Annotation);
             }
 
             return trivia;
         }
-
     }
 
     public class SyntaxLoggerVisitor : CSharpSyntaxRewriter
     {
-
         /// <summary>Called when the visitor visits a CompilationUnitSyntax node.</summary>
+        /// <param name="node"></param>
         public override SyntaxNode VisitCompilationUnit(CompilationUnitSyntax node)
         {
             LogNode(node);
@@ -139,6 +133,7 @@ namespace ConsoleTester.Scratch
         }
 
         /// <summary>Called when the visitor visits a NamespaceDeclarationSyntax node.</summary>
+        /// <param name="node"></param>
         public override SyntaxNode VisitNamespaceDeclaration(NamespaceDeclarationSyntax node)
         {
             LogNode(node);
@@ -147,6 +142,7 @@ namespace ConsoleTester.Scratch
         }
 
         /// <summary>Called when the visitor visits a ClassDeclarationSyntax node.</summary>
+        /// <param name="node"></param>
         public override SyntaxNode VisitClassDeclaration(ClassDeclarationSyntax node)
         {
             LogNode(node);
@@ -155,6 +151,7 @@ namespace ConsoleTester.Scratch
         }
 
         /// <summary>Called when the visitor visits a MethodDeclarationSyntax node.</summary>
+        /// <param name="node"></param>
         public override SyntaxNode VisitMethodDeclaration(MethodDeclarationSyntax node)
         {
             LogNode(node);
@@ -163,6 +160,7 @@ namespace ConsoleTester.Scratch
         }
 
         /// <summary>Called when the visitor visits a PropertyDeclarationSyntax node.</summary>
+        /// <param name="node"></param>
         public override SyntaxNode VisitPropertyDeclaration(PropertyDeclarationSyntax node)
         {
             LogNode(node);
@@ -184,16 +182,13 @@ namespace ConsoleTester.Scratch
                 case SyntaxKind.SingleLineDocumentationCommentTrivia:
                 case SyntaxKind.MultiLineCommentTrivia:
                 case SyntaxKind.SingleLineCommentTrivia:
-                    return default(SyntaxTrivia);
+                    return default;
                 case SyntaxKind.EndOfLineTrivia:
                     return trivia.WithAdditionalAnnotations(Formatter.Annotation);
             }
 
             return trivia;
         }
-
-
-
 
         public override SyntaxToken VisitToken(SyntaxToken token)
         {
@@ -206,7 +201,6 @@ namespace ConsoleTester.Scratch
         {
             Console.WriteLine($"{trivia.Kind()} {trivia.Span}");
         }
-
 
         public void LogToken(SyntaxToken token)
         {

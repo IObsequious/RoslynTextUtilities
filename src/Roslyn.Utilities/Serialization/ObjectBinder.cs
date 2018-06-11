@@ -1,11 +1,11 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 
 namespace Roslyn.Utilities
 {
     public static class ObjectBinder
     {
-        private static object s_gate = new object();
+        private static readonly object s_gate = new object();
         private static ObjectBinderSnapshot? s_lastSnapshot = null;
         private static readonly Dictionary<Type, int> s_typeToIndex = new Dictionary<Type, int>();
         private static readonly List<Type> s_types = new List<Type>();

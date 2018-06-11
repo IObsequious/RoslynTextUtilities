@@ -4,7 +4,7 @@ using System.Diagnostics;
 
 namespace Microsoft.CodeAnalysis.PooledObjects
 {
-    public class PooledDictionary<K, V> : Dictionary<K, V>
+    public sealed class PooledDictionary<K, V> : Dictionary<K, V>
     {
         private readonly ObjectPool<PooledDictionary<K, V>> _pool;
 
@@ -15,7 +15,7 @@ namespace Microsoft.CodeAnalysis.PooledObjects
 
         public ImmutableDictionary<K, V> ToImmutableDictionaryAndFree()
         {
-            var result = this.ToImmutableDictionary();
+            ImmutableDictionary<K, V> result = this.ToImmutableDictionary();
             Free();
             return result;
         }
@@ -31,8 +31,7 @@ namespace Microsoft.CodeAnalysis.PooledObjects
         public static ObjectPool<PooledDictionary<K, V>> CreatePool()
         {
             ObjectPool<PooledDictionary<K, V>> pool = null;
-            pool = new ObjectPool<PooledDictionary<K, V>>(factory: () => new PooledDictionary<K, V>(pool), size: 128);
-            return pool;
+            return new ObjectPool<PooledDictionary<K, V>>(factory: () => new PooledDictionary<K, V>(pool), size: 128);
         }
 
         public static PooledDictionary<K, V> GetInstance()

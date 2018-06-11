@@ -6,22 +6,15 @@ namespace Microsoft.CodeAnalysis
 {
     public sealed class ExternalFileLocation : Location, IEquatable<ExternalFileLocation>
     {
-        private readonly TextSpan _sourceSpan;
         private readonly FileLinePositionSpan _lineSpan;
 
         internal ExternalFileLocation(string filePath, TextSpan sourceSpan, LinePositionSpan lineSpan)
         {
-            _sourceSpan = sourceSpan;
+            SourceSpan = sourceSpan;
             _lineSpan = new FileLinePositionSpan(filePath, lineSpan);
         }
 
-        public override TextSpan SourceSpan
-        {
-            get
-            {
-                return _sourceSpan;
-            }
-        }
+        public override TextSpan SourceSpan { get; }
 
         public override FileLinePositionSpan GetLineSpan()
         {
@@ -38,19 +31,19 @@ namespace Microsoft.CodeAnalysis
             return Equals(obj as ExternalFileLocation);
         }
 
-        public bool Equals(ExternalFileLocation obj)
+        public bool Equals(ExternalFileLocation other)
         {
-            if (ReferenceEquals(obj, this))
+            if (ReferenceEquals(other, this))
             {
                 return true;
             }
 
-            return obj != null && _sourceSpan == obj._sourceSpan && _lineSpan.Equals(obj._lineSpan);
+            return other != null && SourceSpan == other.SourceSpan && _lineSpan.Equals(other._lineSpan);
         }
 
         public override int GetHashCode()
         {
-            return Hash.Combine(_lineSpan.GetHashCode(), _sourceSpan.GetHashCode());
+            return Hash.Combine(_lineSpan.GetHashCode(), SourceSpan.GetHashCode());
         }
     }
 }

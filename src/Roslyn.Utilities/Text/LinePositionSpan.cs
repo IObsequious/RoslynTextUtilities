@@ -1,3 +1,9 @@
+﻿// -----------------------------------------------------------------------
+// <copyright file="CryptographicHashProvider.cs" company="Ollon, LLC">
+//     Copyright (c) 2018 Ollon, LLC. All rights reserved.
+// </copyright>
+// -----------------------------------------------------------------------
+
 using System;
 using Roslyn.Utilities;
 
@@ -5,9 +11,6 @@ namespace Microsoft.CodeAnalysis.Text
 {
     public struct LinePositionSpan : IEquatable<LinePositionSpan>
     {
-        private readonly LinePosition _start;
-        private readonly LinePosition _end;
-
         public LinePositionSpan(LinePosition start, LinePosition end)
         {
             if (end < start)
@@ -15,39 +18,28 @@ namespace Microsoft.CodeAnalysis.Text
                 throw new ArgumentException(CodeAnalysisResources.EndMustNotBeLessThanStart, nameof(end));
             }
 
-            _start = start;
-            _end = end;
+            Start = start;
+            End = end;
         }
 
-        public LinePosition Start
-        {
-            get
-            {
-                return _start;
-            }
-        }
+        public LinePosition Start { get; }
 
-        public LinePosition End
-        {
-            get
-            {
-                return _end;
-            }
-        }
+        public LinePosition End { get; }
 
         public override bool Equals(object obj)
         {
-            return obj is LinePositionSpan && Equals((LinePositionSpan) obj);
+            return obj is LinePositionSpan linePositionSpan
+                && Equals(linePositionSpan);
         }
 
         public bool Equals(LinePositionSpan other)
         {
-            return _start.Equals(other._start) && _end.Equals(other._end);
+            return Start.Equals(other.Start) && End.Equals(other.End);
         }
 
         public override int GetHashCode()
         {
-            return Hash.Combine(_start.GetHashCode(), _end.GetHashCode());
+            return Hash.Combine(Start.GetHashCode(), End.GetHashCode());
         }
 
         public static bool operator ==(LinePositionSpan left, LinePositionSpan right)
@@ -62,7 +54,7 @@ namespace Microsoft.CodeAnalysis.Text
 
         public override string ToString()
         {
-            return string.Format(format: "({0})-({1})", arg0: _start, arg1: _end);
+            return string.Format(format: "({0})-({1})", arg0: Start, arg1: End);
         }
     }
 }

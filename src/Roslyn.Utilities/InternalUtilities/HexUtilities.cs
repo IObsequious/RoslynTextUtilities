@@ -81,16 +81,16 @@ namespace Roslyn.Utilities
         {
             if (hexString == null)
             {
-                throw new ArgumentNullException("hexString");
+                throw new ArgumentNullException(nameof(hexString));
             }
 
             Contract.EndContractBlock();
             bool spaceSkippingMode = false;
             int i = 0;
             int length = hexString.Length;
-            if (length >= 2 &&
-                hexString[0] == '0' &&
-                (hexString[1] == 'x' || hexString[1] == 'X'))
+            if (length >= 2
+                && hexString[0] == '0'
+                && (hexString[1] == 'x' || hexString[1] == 'X'))
             {
                 length = hexString.Length - 2;
                 i = 2;
@@ -106,7 +106,7 @@ namespace Roslyn.Utilities
             {
                 spaceSkippingMode = true;
 
-                sArray = new byte[length / 3 + 1];
+                sArray = new byte[(length / 3) + 1];
             }
             else
             {
@@ -137,11 +137,11 @@ namespace Roslyn.Utilities
         /// <returns>true if the character is a hexadecimal digit 0-9, A-F, a-f.</returns>
         internal static bool IsHexDigit(char c)
         {
-            return (c >= '0' && c <= '9') ||
-                   (c >= 'A' && c <= 'F') ||
-                   (c >= 'a' && c <= 'f');
+            return (c >= '0' && c <= '9')
+                   || (c >= 'A' && c <= 'F')
+                   || (c >= 'a' && c <= 'f');
         }
- 
+
         /// <summary>
         /// Returns true if the Unicode character is a binary (0-1) digit.
         /// </summary>
@@ -151,7 +151,7 @@ namespace Roslyn.Utilities
         {
             return c == '0' | c == '1';
         }
- 
+
         /// <summary>
         /// Returns true if the Unicode character is a decimal digit.
         /// </summary>
@@ -161,7 +161,7 @@ namespace Roslyn.Utilities
         {
             return c >= '0' && c <= '9';
         }
- 
+
         /// <summary>
         /// Returns the value of a hexadecimal Unicode character.
         /// </summary>
@@ -169,9 +169,9 @@ namespace Roslyn.Utilities
         internal static int HexValue(char c)
         {
             Debug.Assert(IsHexDigit(c));
-            return (c >= '0' && c <= '9') ? c - '0' : (c & 0xdf) - 'A' + 10;
+            return c >= '0' && c <= '9' ? c - '0' : (c & 0xdf) - 'A' + 10;
         }
- 
+
         /// <summary>
         /// Returns the value of a binary Unicode character.
         /// </summary>
@@ -181,7 +181,7 @@ namespace Roslyn.Utilities
             Debug.Assert(IsBinaryDigit(c));
             return c - '0';
         }
- 
+
         /// <summary>
         /// Returns the value of a decimal Unicode character.
         /// </summary>
@@ -191,7 +191,7 @@ namespace Roslyn.Utilities
             Debug.Assert(IsDecDigit(c));
             return c - '0';
         }
- 
+
         // UnicodeCategory value | Unicode designation
         // -----------------------+-----------------------
         // UppercaseLetter         "Lu" (letter, uppercase)
@@ -224,7 +224,7 @@ namespace Roslyn.Utilities
         // ModifierSymbol          "Sk" (symbol, modifier)
         // OtherSymbol             "So" (symbol, other)
         // OtherNotAssigned        "Cn" (other, not assigned)
- 
+
         /// <summary>
         /// Returns true if the Unicode character represents a whitespace.
         /// </summary>
@@ -236,9 +236,9 @@ namespace Roslyn.Utilities
             //   Horizontal tab character (U+0009)
             //   Vertical tab character (U+000B)
             //   Form feed character (U+000C)
- 
+
             // Space and no-break space are the only space separators (Zs) in ASCII range
- 
+
             return ch == ' '
                 || ch == '\t'
                 || ch == '\v'
@@ -257,7 +257,7 @@ namespace Roslyn.Utilities
                 || ch == '\u001A'
                 || (ch > 255 && CharUnicodeInfo.GetUnicodeCategory(ch) == UnicodeCategory.SpaceSeparator);
         }
- 
+
         /// <summary>
         /// Returns true if the Unicode character is a newline character.
         /// </summary>
@@ -270,14 +270,14 @@ namespace Roslyn.Utilities
             //   Next line character (U+0085)
             //   Line separator character (U+2028)
             //   Paragraph separator character (U+2029)
- 
+
             return ch == '\r'
                 || ch == '\n'
                 || ch == '\u0085'
                 || ch == '\u2028'
                 || ch == '\u2029';
         }
- 
+
         /// <summary>
         /// Returns true if the Unicode character can be the starting character of a C# identifier.
         /// </summary>
@@ -286,7 +286,7 @@ namespace Roslyn.Utilities
         {
             return UnicodeCharacterUtilities.IsIdentifierStartCharacter(ch);
         }
- 
+
         /// <summary>
         /// Returns true if the Unicode character can be a part of a C# identifier.
         /// </summary>
@@ -295,15 +295,16 @@ namespace Roslyn.Utilities
         {
             return UnicodeCharacterUtilities.IsIdentifierPartCharacter(ch);
         }
- 
+
         /// <summary>
         /// Check that the name is a valid identifier.
         /// </summary>
+        /// <param name="name"></param>
         public static bool IsValidIdentifier(string name)
         {
             return UnicodeCharacterUtilities.IsValidIdentifier(name);
         }
- 
+
         /// <summary>
         /// Spec section 2.4.2 says that identifiers are compared without regard
         /// to leading "@" characters or unicode formatting characters.  As in dev10,
@@ -313,6 +314,7 @@ namespace Roslyn.Utilities
         /// characters will have been dropped from the search string).
         /// See DevDiv #14432 for more.
         /// </summary>
+        /// <param name="name"></param>
         internal static bool ContainsDroppedIdentifierCharacters(string name)
         {
             if (string.IsNullOrEmpty(name))
@@ -323,7 +325,7 @@ namespace Roslyn.Utilities
             {
                 return true;
             }
- 
+
             int nameLength = name.Length;
             for (int i = 0; i < nameLength; i++)
             {
@@ -332,10 +334,10 @@ namespace Roslyn.Utilities
                     return true;
                 }
             }
- 
+
             return false;
         }
- 
+
         internal static bool IsNonAsciiQuotationMark(char ch)
         {
             // CONSIDER: There are others:

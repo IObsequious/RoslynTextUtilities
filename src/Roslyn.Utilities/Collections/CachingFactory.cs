@@ -53,7 +53,7 @@ namespace Microsoft.CodeAnalysis
                 }
             }
 
-            value = default(TValue);
+            value = default;
             return false;
         }
 
@@ -128,7 +128,7 @@ namespace Microsoft.CodeAnalysis
                 return true;
             }
 
-            value = default(TValue);
+            value = default;
             return false;
         }
 
@@ -151,10 +151,9 @@ namespace Microsoft.CodeAnalysis
         public static ObjectPool<CachingIdentityFactory<TKey, TValue>> CreatePool(int size, Func<TKey, TValue> valueFactory)
         {
             ObjectPool<CachingIdentityFactory<TKey, TValue>> pool = null;
-            pool = new ObjectPool<CachingIdentityFactory<TKey, TValue>>(
-                factory: () => new CachingIdentityFactory<TKey, TValue>(size, valueFactory, pool),
-                size: Environment.ProcessorCount * 2);
-            return pool;
+            return new ObjectPool<CachingIdentityFactory<TKey, TValue>>(
+                () => new CachingIdentityFactory<TKey, TValue>(size, valueFactory, pool),
+                Environment.ProcessorCount * 2);
         }
 
         public void Free()

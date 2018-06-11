@@ -4,7 +4,7 @@ using Microsoft.CodeAnalysis.Text;
 
 namespace Microsoft.CodeAnalysis
 {
-    [DebuggerDisplay("{GetDebuggerDisplay(), nq}")]
+    [DebuggerDisplay("{" + nameof(GetDebuggerDisplay) + "(), nq}")]
     public abstract class Location
     {
         internal Location()
@@ -15,18 +15,18 @@ namespace Microsoft.CodeAnalysis
         {
             get
             {
-                return default(TextSpan);
+                return default;
             }
         }
 
         public virtual FileLinePositionSpan GetLineSpan()
         {
-            return default(FileLinePositionSpan);
+            return default;
         }
 
         public virtual FileLinePositionSpan GetMappedLineSpan()
         {
-            return default(FileLinePositionSpan);
+            return default;
         }
 
         public abstract override bool Equals(object obj);
@@ -35,9 +35,9 @@ namespace Microsoft.CodeAnalysis
 
         public static bool operator ==(Location left, Location right)
         {
-            if (ReferenceEquals(left, null))
+            if (left is null)
             {
-                return ReferenceEquals(right, null);
+                return right is null;
             }
 
             return left.Equals(right);

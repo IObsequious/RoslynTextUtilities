@@ -49,7 +49,6 @@ namespace Roslyn.Utilities
             }
             catch (Exception e)
             {
-               
                 _failed = true;
             }
         }

@@ -11,35 +11,27 @@ namespace Microsoft.CodeAnalysis.Text
 {
     public sealed class CompositeText : SourceText
     {
-        private readonly ImmutableArray<SourceText> _segments;
         private readonly int _length;
         private readonly int _storageSize;
         private readonly int[] _segmentOffsets;
-        private readonly Encoding _encoding;
 
         private CompositeText(ImmutableArray<SourceText> segments, Encoding encoding, SourceHashAlgorithm checksumAlgorithm)
             : base(checksumAlgorithm: checksumAlgorithm)
         {
             Debug.Assert(!segments.IsDefaultOrEmpty);
-            _segments = segments;
-            _encoding = encoding;
+            Segments = segments;
+            Encoding = encoding;
             ComputeLengthAndStorageSize(segments, out _length, out _storageSize);
             _segmentOffsets = new int[segments.Length];
             int offset = 0;
             for (int i = 0; i < _segmentOffsets.Length; i++)
             {
                 _segmentOffsets[i] = offset;
-                offset += _segments[i].Length;
+                offset += Segments[i].Length;
             }
         }
 
-        public override Encoding Encoding
-        {
-            get
-            {
-                return _encoding;
-            }
-        }
+        public override Encoding Encoding { get; }
 
         public override int Length
         {
@@ -57,22 +49,14 @@ namespace Microsoft.CodeAnalysis.Text
             }
         }
 
-        internal override ImmutableArray<SourceText> Segments
-        {
-            get
-            {
-                return _segments;
-            }
-        }
+        internal override ImmutableArray<SourceText> Segments { get; }
 
         public override char this[int position]
         {
             get
             {
-                int index;
-                int offset;
-                GetIndexAndOffset(position, out index, out offset);
-                return _segments[index][offset];
+                GetIndexAndOffset(position, out int index, out int offset);
+                return Segments[index][offset];
             }
         }
 
@@ -81,13 +65,11 @@ namespace Microsoft.CodeAnalysis.Text
             CheckSubSpan(span);
             int sourceIndex = span.Start;
             int count = span.Length;
-            int segIndex;
-            int segOffset;
-            GetIndexAndOffset(sourceIndex, out segIndex, out segOffset);
+            GetIndexAndOffset(sourceIndex, out int segIndex, out int segOffset);
             ArrayBuilder<SourceText> newSegments = ArrayBuilder<SourceText>.GetInstance();
-            while (segIndex < _segments.Length && count > 0)
+            while (segIndex < Segments.Length && count > 0)
             {
-                var segment = _segments[segIndex];
+                SourceText segment = Segments[segIndex];
                 int copyLength = Math.Min(count, segment.Length - segOffset);
                 AddSegments(newSegments, segment.GetSubText(new TextSpan(segOffset, copyLength)));
                 count -= copyLength;
@@ -140,9 +122,9 @@ namespace Microsoft.CodeAnalysis.Text
             int segIndex;
             int segOffset;
             GetIndexAndOffset(sourceIndex, out segIndex, out segOffset);
-            while (segIndex < _segments.Length && count > 0)
+            while (segIndex < Segments.Length && count > 0)
             {
-                var segment = _segments[segIndex];
+                SourceText segment = Segments[segIndex];
                 int copyLength = Math.Min(count, segment.Length - segOffset);
                 segment.CopyTo(segOffset, destination, destinationIndex, copyLength);
                 count -= copyLength;
@@ -161,7 +143,7 @@ namespace Microsoft.CodeAnalysis.Text
             }
             else
             {
-                segments.AddRange(composite._segments);
+                segments.AddRange(composite.Segments);
             }
         }
 
@@ -283,7 +265,7 @@ namespace Microsoft.CodeAnalysis.Text
             }
         }
 
-        private static ObjectPool<HashSet<SourceText>> s_uniqueSourcesPool
+        private static readonly ObjectPool<HashSet<SourceText>> s_uniqueSourcesPool
             = new ObjectPool<HashSet<SourceText>>(factory: () => new HashSet<SourceText>(), size: 5);
 
         private static void ComputeLengthAndStorageSize(IReadOnlyList<SourceText> segments, out int length, out int size)

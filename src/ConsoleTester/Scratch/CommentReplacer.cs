@@ -54,7 +54,7 @@ namespace ConsoleTester.Scratch
                 case SyntaxKind.SingleLineDocumentationCommentTrivia:
                 case SyntaxKind.MultiLineCommentTrivia:
                 case SyntaxKind.SingleLineCommentTrivia:
-                    return default(SyntaxTrivia);
+                    return default;
             }
 
             return newTrivia;

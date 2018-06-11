@@ -41,15 +41,15 @@ namespace Roslyn.Utilities
 
         public static ObjectReader TryGetReader(
             Stream stream,
-            CancellationToken cancellationToken = default(CancellationToken))
+            CancellationToken cancellationToken = default)
         {
             if (stream == null)
             {
                 return null;
             }
 
-            if (stream.ReadByte() != VersionByte1 ||
-                stream.ReadByte() != VersionByte2)
+            if (stream.ReadByte() != VersionByte1
+                || stream.ReadByte() != VersionByte2)
             {
                 return null;
             }
@@ -265,6 +265,7 @@ namespace Roslyn.Utilities
         private struct ReaderReferenceMap<T> where T : class
         {
             private readonly List<T> _values;
+
             internal static readonly ObjectPool<List<T>> s_objectListPool
                 = new ObjectPool<List<T>>(factory: () => new List<T>(20));
 
@@ -402,7 +403,7 @@ namespace Roslyn.Utilities
             }
 
             ObjectWriter.EncodingKind elementKind = (ObjectWriter.EncodingKind) _reader.ReadByte();
-            var elementType = ObjectWriter.s_reverseTypeMap[(int) elementKind];
+            Type elementType = ObjectWriter.s_reverseTypeMap[(int) elementKind];
             if (elementType != null)
             {
                 return ReadPrimitiveTypeArrayElements(elementType, elementKind, length);

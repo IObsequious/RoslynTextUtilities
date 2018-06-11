@@ -8,19 +8,16 @@ using Roslyn.Utilities;
 
 namespace Microsoft.CodeAnalysis
 {
-    [DebuggerDisplay("{GetDebuggerDisplay(), nq}")]
+    [DebuggerDisplay("{" + nameof(GetDebuggerDisplay) + "(), nq}")]
     public class DiagnosticInfo : IFormattable, IObjectWritable
     {
-        private readonly CommonMessageProvider _messageProvider;
-        private readonly int _errorCode;
-        private readonly DiagnosticSeverity _defaultSeverity;
-        private readonly DiagnosticSeverity _effectiveSeverity;
-        private readonly object[] _arguments;
         private static ImmutableDictionary<int, DiagnosticDescriptor> s_errorCodeToDescriptorMap =
             ImmutableDictionary<int, DiagnosticDescriptor>.Empty;
+
         private static readonly ImmutableArray<string> s_compilerErrorCustomTags = ImmutableArray.Create(WellKnownDiagnosticTags.Compiler,
             WellKnownDiagnosticTags.Telemetry,
             WellKnownDiagnosticTags.NotConfigurable);
+
         private static readonly ImmutableArray<string> s_compilerNonErrorCustomTags =
             ImmutableArray.Create(WellKnownDiagnosticTags.Compiler, WellKnownDiagnosticTags.Telemetry);
 
@@ -31,25 +28,25 @@ namespace Microsoft.CodeAnalysis
 
         public DiagnosticInfo(CommonMessageProvider messageProvider, int errorCode)
         {
-            _messageProvider = messageProvider;
-            _errorCode = errorCode;
-            _defaultSeverity = messageProvider.GetSeverity(errorCode);
-            _effectiveSeverity = _defaultSeverity;
+            MessageProvider = messageProvider;
+            Code = errorCode;
+            DefaultSeverity = messageProvider.GetSeverity(errorCode);
+            Severity = DefaultSeverity;
         }
 
         public DiagnosticInfo(CommonMessageProvider messageProvider, int errorCode, params object[] arguments)
             : this(messageProvider, errorCode)
         {
-            _arguments = arguments;
+            Arguments = arguments;
         }
 
         private DiagnosticInfo(DiagnosticInfo original, DiagnosticSeverity overriddenSeverity)
         {
-            _messageProvider = original.MessageProvider;
-            _errorCode = original._errorCode;
-            _defaultSeverity = original.DefaultSeverity;
-            _arguments = original._arguments;
-            _effectiveSeverity = overriddenSeverity;
+            MessageProvider = original.MessageProvider;
+            Code = original.Code;
+            DefaultSeverity = original.DefaultSeverity;
+            Arguments = original.Arguments;
+            Severity = overriddenSeverity;
         }
 
         public static DiagnosticDescriptor GetDescriptor(int errorCode, CommonMessageProvider messageProvider)
@@ -77,7 +74,7 @@ namespace Microsoft.CodeAnalysis
             LocalizableString messageFormat = messageProvider.GetMessageFormat(errorCode);
             string helpLink = messageProvider.GetHelpLink(errorCode);
             string category = messageProvider.GetCategory(errorCode);
-            var customTags = GetCustomTags(defaultSeverity);
+            ImmutableArray<string> customTags = GetCustomTags(defaultSeverity);
             return new DiagnosticDescriptor(id,
                 title,
                 messageFormat,
@@ -89,14 +86,13 @@ namespace Microsoft.CodeAnalysis
                 customTags);
         }
 
-
         public DiagnosticInfo(CommonMessageProvider messageProvider, bool isWarningAsError, int errorCode, params object[] arguments)
             : this(messageProvider, errorCode, arguments)
         {
-            Debug.Assert(!isWarningAsError || _defaultSeverity == DiagnosticSeverity.Warning);
+            Debug.Assert(!isWarningAsError || DefaultSeverity == DiagnosticSeverity.Warning);
             if (isWarningAsError)
             {
-                _effectiveSeverity = DiagnosticSeverity.Error;
+                Severity = DiagnosticSeverity.Error;
             }
         }
 
@@ -116,15 +112,15 @@ namespace Microsoft.CodeAnalysis
 
         protected virtual void WriteTo(ObjectWriter writer)
         {
-            writer.WriteValue(_messageProvider);
-            writer.WriteUInt32((uint) _errorCode);
-            writer.WriteInt32((int) _effectiveSeverity);
-            writer.WriteInt32((int) _defaultSeverity);
-            int count = _arguments?.Length ?? 0;
+            writer.WriteValue(MessageProvider);
+            writer.WriteUInt32((uint) Code);
+            writer.WriteInt32((int) Severity);
+            writer.WriteInt32((int) DefaultSeverity);
+            int count = Arguments?.Length ?? 0;
             writer.WriteUInt32((uint) count);
             if (count > 0)
             {
-                foreach (object arg in _arguments)
+                foreach (object arg in Arguments)
                 {
                     writer.WriteString(arg.ToString());
                 }
@@ -133,69 +129,51 @@ namespace Microsoft.CodeAnalysis
 
         protected DiagnosticInfo(ObjectReader reader)
         {
-            _messageProvider = (CommonMessageProvider) reader.ReadValue();
-            _errorCode = (int) reader.ReadUInt32();
-            _effectiveSeverity = (DiagnosticSeverity) reader.ReadInt32();
-            _defaultSeverity = (DiagnosticSeverity) reader.ReadInt32();
+            MessageProvider = (CommonMessageProvider) reader.ReadValue();
+            Code = (int) reader.ReadUInt32();
+            Severity = (DiagnosticSeverity) reader.ReadInt32();
+            DefaultSeverity = (DiagnosticSeverity) reader.ReadInt32();
             int count = (int) reader.ReadUInt32();
             if (count == 0)
             {
-                _arguments = Array.Empty<object>();
+                Arguments = Array.Empty<object>();
             }
             else if (count > 0)
             {
-                _arguments = new string[count];
+                Arguments = new object[count];
                 for (int i = 0; i < count; i++)
                 {
-                    _arguments[i] = reader.ReadString();
+                    Arguments[i] = reader.ReadString();
                 }
             }
         }
 
         #endregion
 
-        public int Code
-        {
-            get
-            {
-                return _errorCode;
-            }
-        }
+        public int Code { get; }
 
         public DiagnosticDescriptor Descriptor
         {
             get
             {
-                return GetOrCreateDescriptor(_errorCode, _defaultSeverity, _messageProvider);
+                return GetOrCreateDescriptor(Code, DefaultSeverity, MessageProvider);
             }
         }
 
-        public DiagnosticSeverity Severity
-        {
-            get
-            {
-                return _effectiveSeverity;
-            }
-        }
+        public DiagnosticSeverity Severity { get; }
 
-        public DiagnosticSeverity DefaultSeverity
-        {
-            get
-            {
-                return _defaultSeverity;
-            }
-        }
+        public DiagnosticSeverity DefaultSeverity { get; }
 
         public int WarningLevel
         {
             get
             {
-                if (_effectiveSeverity != _defaultSeverity)
+                if (Severity != DefaultSeverity)
                 {
-                    return Diagnostic.GetDefaultWarningLevel(_effectiveSeverity);
+                    return Diagnostic.GetDefaultWarningLevel(Severity);
                 }
 
-                return _messageProvider.GetWarningLevel(_errorCode);
+                return MessageProvider.GetWarningLevel(Code);
             }
         }
 
@@ -203,8 +181,8 @@ namespace Microsoft.CodeAnalysis
         {
             get
             {
-                return DefaultSeverity == DiagnosticSeverity.Warning &&
-                       Severity == DiagnosticSeverity.Error;
+                return DefaultSeverity == DiagnosticSeverity.Warning
+                       && Severity == DiagnosticSeverity.Error;
             }
         }
 
@@ -212,7 +190,7 @@ namespace Microsoft.CodeAnalysis
         {
             get
             {
-                return _messageProvider.GetCategory(_errorCode);
+                return MessageProvider.GetCategory(Code);
             }
         }
 
@@ -220,7 +198,7 @@ namespace Microsoft.CodeAnalysis
         {
             get
             {
-                return GetCustomTags(_defaultSeverity);
+                return GetCustomTags(DefaultSeverity);
             }
         }
 
@@ -233,7 +211,7 @@ namespace Microsoft.CodeAnalysis
 
         public bool IsNotConfigurable()
         {
-            return _defaultSeverity == DiagnosticSeverity.Error;
+            return DefaultSeverity == DiagnosticSeverity.Error;
         }
 
         public virtual IReadOnlyList<Location> AdditionalLocations
@@ -248,19 +226,19 @@ namespace Microsoft.CodeAnalysis
         {
             get
             {
-                return _messageProvider.GetIdForErrorCode(_errorCode);
+                return MessageProvider.GetIdForErrorCode(Code);
             }
         }
 
         public virtual string GetMessage(IFormatProvider formatProvider = null)
         {
-            string message = _messageProvider.LoadMessage(_errorCode, formatProvider as CultureInfo);
+            string message = MessageProvider.LoadMessage(Code, formatProvider as CultureInfo);
             if (string.IsNullOrEmpty(message))
             {
                 return string.Empty;
             }
 
-            if (_arguments == null || _arguments.Length == 0)
+            if (Arguments == null || Arguments.Length == 0)
             {
                 return message;
             }
@@ -271,9 +249,9 @@ namespace Microsoft.CodeAnalysis
         protected object[] GetArgumentsToUse(IFormatProvider formatProvider)
         {
             object[] argumentsToUse = null;
-            for (int i = 0; i < _arguments.Length; i++)
+            for (int i = 0; i < Arguments.Length; i++)
             {
-                if (_arguments[i] is DiagnosticInfo embedded)
+                if (Arguments[i] is DiagnosticInfo embedded)
                 {
                     argumentsToUse = InitializeArgumentListIfNeeded(argumentsToUse);
                     argumentsToUse[i] = embedded.GetMessage(formatProvider);
@@ -281,7 +259,7 @@ namespace Microsoft.CodeAnalysis
                 }
             }
 
-            return argumentsToUse ?? _arguments;
+            return argumentsToUse ?? Arguments;
         }
 
         private object[] InitializeArgumentListIfNeeded(object[] argumentsToUse)
@@ -291,26 +269,14 @@ namespace Microsoft.CodeAnalysis
                 return argumentsToUse;
             }
 
-            object[] newArguments = new object[_arguments.Length];
-            Array.Copy(_arguments, newArguments, newArguments.Length);
+            object[] newArguments = new object[Arguments.Length];
+            Array.Copy(Arguments, newArguments, newArguments.Length);
             return newArguments;
         }
 
-        internal object[] Arguments
-        {
-            get
-            {
-                return _arguments;
-            }
-        }
+        internal object[] Arguments { get; }
 
-        internal CommonMessageProvider MessageProvider
-        {
-            get
-            {
-                return _messageProvider;
-            }
-        }
+        internal CommonMessageProvider MessageProvider { get; }
 
         public override string ToString()
         {
@@ -326,18 +292,18 @@ namespace Microsoft.CodeAnalysis
         {
             return string.Format(formatProvider,
                 "{0}: {1}",
-                _messageProvider.GetMessagePrefix(MessageIdentifier, Severity, IsWarningAsError, formatProvider as CultureInfo),
+                MessageProvider.GetMessagePrefix(MessageIdentifier, Severity, IsWarningAsError, formatProvider as CultureInfo),
                 GetMessage(formatProvider));
         }
 
         public sealed override int GetHashCode()
         {
-            int hashCode = _errorCode;
-            if (_arguments != null)
+            int hashCode = Code;
+            if (Arguments != null)
             {
-                for (int i = 0; i < _arguments.Length; i++)
+                for (int i = 0; i < Arguments.Length; i++)
                 {
-                    hashCode = Hash.Combine(_arguments[i], hashCode);
+                    hashCode = Hash.Combine(Arguments[i], hashCode);
                 }
             }
 
@@ -348,20 +314,20 @@ namespace Microsoft.CodeAnalysis
         {
             DiagnosticInfo other = obj as DiagnosticInfo;
             bool result = false;
-            if (other != null &&
-                other._errorCode == _errorCode &&
-                GetType() == obj.GetType())
+            if (other != null
+                && other.Code == Code
+                && GetType() == obj.GetType())
             {
-                if (_arguments == null && other._arguments == null)
+                if (Arguments == null && other.Arguments == null)
                 {
                     result = true;
                 }
-                else if (_arguments != null && other._arguments != null && _arguments.Length == other._arguments.Length)
+                else if (Arguments != null && other.Arguments != null && Arguments.Length == other.Arguments.Length)
                 {
                     result = true;
-                    for (int i = 0; i < _arguments.Length; i++)
+                    for (int i = 0; i < Arguments.Length; i++)
                     {
-                        if (!Equals(_arguments[i], other._arguments[i]))
+                        if (!Equals(Arguments[i], other.Arguments[i]))
                         {
                             result = false;
                             break;

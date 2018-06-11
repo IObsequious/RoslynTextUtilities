@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using Roslyn.Utilities;
 
@@ -25,13 +25,13 @@ namespace Microsoft.CodeAnalysis.Text
         public bool Equals(TextChangeRange other)
         {
             return
-                other.Span == Span &&
-                other.NewLength == NewLength;
+                other.Span == Span
+                && other.NewLength == NewLength;
         }
 
         public override bool Equals(object obj)
         {
-            return obj is TextChangeRange && Equals((TextChangeRange) obj);
+            return obj is TextChangeRange textChangeRange && Equals(textChangeRange);
         }
 
         public override int GetHashCode()
@@ -78,7 +78,7 @@ namespace Microsoft.CodeAnalysis.Text
 
             if (start > end)
             {
-                return default(TextChangeRange);
+                return default;
             }
 
             TextSpan combined = TextSpan.FromBounds(start, end);

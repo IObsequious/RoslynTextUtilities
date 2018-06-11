@@ -14,7 +14,7 @@ namespace Microsoft.CodeAnalysis
             }
 #if !NETFX20
             AggregateException aggregate = exception as AggregateException;
-            if (aggregate != null && aggregate.InnerExceptions.Count == 1)
+            if (aggregate?.InnerExceptions.Count == 1)
             {
                 exception = aggregate.InnerExceptions[0];
             }

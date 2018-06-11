@@ -11,7 +11,7 @@ namespace ConsoleTester.Scratch
     {
         private class SolutionWriter : TextWriter
         {
-            private StreamWriter _innerWriter;
+            private readonly StreamWriter _innerWriter;
 
             public SolutionWriter(FileStream stream)
             {
@@ -37,10 +37,7 @@ namespace ConsoleTester.Scratch
             {
                 if (disposing)
                 {
-                    if (_innerWriter != null)
-                    {
-                        _innerWriter.Close();
-                    }
+                    _innerWriter?.Close();
                 }
             }
 
@@ -64,6 +61,7 @@ namespace ConsoleTester.Scratch
             /// </summary>
             /// <param name="firstLine"></param>
             /// <param name="proj"></param>
+            /// <param name="projectInSolution"></param>
             public void WriteProjectInSolution(ProjectInSolution projectInSolution)
             {
                 WriteLine(

@@ -1,4 +1,4 @@
-using System.Diagnostics;
+﻿using System.Diagnostics;
 
 namespace Roslyn.Utilities
 {
@@ -13,7 +13,7 @@ namespace Roslyn.Utilities
         {
             unchecked
             {
-                v = v - ((v >> 1) & 0x55555555u);
+                v -= ((v >> 1) & 0x55555555u);
                 v = (v & 0x33333333u) + ((v >> 2) & 0x33333333u);
                 return (int) (((v + (v >> 4)) & 0xF0F0F0Fu) * 0x1010101u) >> 24;
             }

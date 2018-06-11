@@ -10,14 +10,7 @@ namespace Microsoft.CodeAnalysis
     {
         public sealed class SimpleDiagnostic : Diagnostic
         {
-            private readonly DiagnosticDescriptor _descriptor;
-            private readonly DiagnosticSeverity _severity;
-            private readonly int _warningLevel;
-            private readonly Location _location;
-            private readonly IReadOnlyList<Location> _additionalLocations;
             private readonly object[] _messageArgs;
-            private readonly ImmutableDictionary<string, string> _properties;
-            private readonly bool _isSuppressed;
 
             private SimpleDiagnostic(
                 DiagnosticDescriptor descriptor,
@@ -29,22 +22,22 @@ namespace Microsoft.CodeAnalysis
                 ImmutableDictionary<string, string> properties,
                 bool isSuppressed)
             {
-                if (warningLevel == 0 && severity != DiagnosticSeverity.Error ||
-                    warningLevel != 0 && severity == DiagnosticSeverity.Error)
+                if ((warningLevel == 0 && severity != DiagnosticSeverity.Error)
+                    || (warningLevel != 0 && severity == DiagnosticSeverity.Error))
                 {
                     throw new ArgumentException(
                         $"{nameof(warningLevel)} ({warningLevel}) and {nameof(severity)} ({severity}) are not compatible.",
                         nameof(warningLevel));
                 }
 
-                _descriptor = descriptor ?? throw new ArgumentNullException(nameof(descriptor));
-                _severity = severity;
-                _warningLevel = warningLevel;
-                _location = location ?? Location.None;
-                _additionalLocations = additionalLocations?.ToImmutableArray() ?? SpecializedCollections.EmptyReadOnlyList<Location>();
+                Descriptor = descriptor ?? throw new ArgumentNullException(nameof(descriptor));
+                Severity = severity;
+                WarningLevel = warningLevel;
+                Location = location ?? Location.None;
+                AdditionalLocations = additionalLocations?.ToImmutableArray() ?? SpecializedCollections.EmptyReadOnlyList<Location>();
                 _messageArgs = messageArgs ?? Array.Empty<object>();
-                _properties = properties ?? ImmutableDictionary<string, string>.Empty;
-                _isSuppressed = isSuppressed;
+                Properties = properties ?? ImmutableDictionary<string, string>.Empty;
+                IsSuppressed = isSuppressed;
             }
 
             public static SimpleDiagnostic Create(
@@ -102,19 +95,13 @@ namespace Microsoft.CodeAnalysis
                     isSuppressed);
             }
 
-            public override DiagnosticDescriptor Descriptor
-            {
-                get
-                {
-                    return _descriptor;
-                }
-            }
+            public override DiagnosticDescriptor Descriptor { get; }
 
             public override string Id
             {
                 get
                 {
-                    return _descriptor.Id;
+                    return Descriptor.Id;
                 }
             }
 
@@ -122,10 +109,10 @@ namespace Microsoft.CodeAnalysis
             {
                 if (_messageArgs.Length == 0)
                 {
-                    return _descriptor.MessageFormat.ToString(formatProvider);
+                    return Descriptor.MessageFormat.ToString(formatProvider);
                 }
 
-                string localizedMessageFormat = _descriptor.MessageFormat.ToString(formatProvider);
+                string localizedMessageFormat = Descriptor.MessageFormat.ToString(formatProvider);
                 try
                 {
                     return string.Format(formatProvider, localizedMessageFormat, _messageArgs);
@@ -144,66 +131,30 @@ namespace Microsoft.CodeAnalysis
                 }
             }
 
-            public override DiagnosticSeverity Severity
-            {
-                get
-                {
-                    return _severity;
-                }
-            }
+            public override DiagnosticSeverity Severity { get; }
 
-            public override bool IsSuppressed
-            {
-                get
-                {
-                    return _isSuppressed;
-                }
-            }
+            public override bool IsSuppressed { get; }
 
-            public override int WarningLevel
-            {
-                get
-                {
-                    return _warningLevel;
-                }
-            }
+            public override int WarningLevel { get; }
 
-            public override Location Location
-            {
-                get
-                {
-                    return _location;
-                }
-            }
+            public override Location Location { get; }
 
-            public override IReadOnlyList<Location> AdditionalLocations
-            {
-                get
-                {
-                    return _additionalLocations;
-                }
-            }
+            public override IReadOnlyList<Location> AdditionalLocations { get; }
 
-            public override ImmutableDictionary<string, string> Properties
-            {
-                get
-                {
-                    return _properties;
-                }
-            }
+            public override ImmutableDictionary<string, string> Properties { get; }
 
-            public override bool Equals(Diagnostic obj)
+            public override bool Equals(Diagnostic other)
             {
-                if (!(obj is SimpleDiagnostic other))
+                if (!(other is SimpleDiagnostic otherDiagnostic))
                 {
                     return false;
                 }
 
-                return _descriptor.Equals(other._descriptor) &&
-                       _messageArgs.SequenceEqual(other._messageArgs, (a, b) => a == b) &&
-                       _location == other._location &&
-                       _severity == other._severity &&
-                       _warningLevel == other._warningLevel;
+                return Descriptor.Equals(otherDiagnostic.Descriptor)
+                       && _messageArgs.SequenceEqual(otherDiagnostic._messageArgs, (a, b) => a == b)
+                       && Location == otherDiagnostic.Location
+                       && Severity == otherDiagnostic.Severity
+                       && WarningLevel == otherDiagnostic.WarningLevel;
             }
 
             public override bool Equals(object obj)
@@ -213,10 +164,10 @@ namespace Microsoft.CodeAnalysis
 
             public override int GetHashCode()
             {
-                return Hash.Combine(_descriptor,
+                return Hash.Combine(Descriptor,
                     Hash.CombineValues(_messageArgs,
-                        Hash.Combine(_warningLevel,
-                            Hash.Combine(_location, (int) _severity))));
+                        Hash.Combine(WarningLevel,
+                            Hash.Combine(Location, (int) Severity))));
             }
 
             public override Diagnostic WithLocation(Location location)
@@ -226,16 +177,16 @@ namespace Microsoft.CodeAnalysis
                     throw new ArgumentNullException(nameof(location));
                 }
 
-                if (location != _location)
+                if (location != Location)
                 {
-                    return new SimpleDiagnostic(_descriptor,
-                        _severity,
-                        _warningLevel,
+                    return new SimpleDiagnostic(Descriptor,
+                        Severity,
+                        WarningLevel,
                         location,
-                        _additionalLocations,
+                        AdditionalLocations,
                         _messageArgs,
-                        _properties,
-                        _isSuppressed);
+                        Properties,
+                        IsSuppressed);
                 }
 
                 return this;
@@ -246,14 +197,14 @@ namespace Microsoft.CodeAnalysis
                 if (Severity != severity)
                 {
                     int warningLevel = GetDefaultWarningLevel(severity);
-                    return new SimpleDiagnostic(_descriptor,
+                    return new SimpleDiagnostic(Descriptor,
                         severity,
                         warningLevel,
-                        _location,
-                        _additionalLocations,
+                        Location,
+                        AdditionalLocations,
                         _messageArgs,
-                        _properties,
-                        _isSuppressed);
+                        Properties,
+                        IsSuppressed);
                 }
 
                 return this;
@@ -263,13 +214,13 @@ namespace Microsoft.CodeAnalysis
             {
                 if (IsSuppressed != isSuppressed)
                 {
-                    return new SimpleDiagnostic(_descriptor,
-                        _severity,
-                        _warningLevel,
-                        _location,
-                        _additionalLocations,
+                    return new SimpleDiagnostic(Descriptor,
+                        Severity,
+                        WarningLevel,
+                        Location,
+                        AdditionalLocations,
                         _messageArgs,
-                        _properties,
+                        Properties,
                         isSuppressed);
                 }
 

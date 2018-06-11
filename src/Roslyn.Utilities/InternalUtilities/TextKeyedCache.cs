@@ -68,8 +68,7 @@ namespace Roslyn.Utilities
         private static ObjectPool<TextKeyedCache<T>> CreatePool()
         {
             ObjectPool<TextKeyedCache<T>> pool = null;
-            pool = new ObjectPool<TextKeyedCache<T>>(factory: () => new TextKeyedCache<T>(pool), size: Environment.ProcessorCount * 4);
-            return pool;
+            return new ObjectPool<TextKeyedCache<T>>(factory: () => new TextKeyedCache<T>(pool), size: Environment.ProcessorCount * 4);
         }
 
         public static TextKeyedCache<T> GetInstance()
@@ -168,7 +167,7 @@ namespace Roslyn.Utilities
             }
 
             int i1 = NextRandom() & SharedBucketSizeMask;
-            idx = (idx + (i1 * i1 + i1) / 2) & SharedSizeMask;
+            idx = (idx + (((i1 * i1) + i1) / 2)) & SharedSizeMask;
             foundIdx:
             arr[idx].HashCode = hashCode;
             Volatile.Write(ref arr[idx].Entry, e);

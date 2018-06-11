@@ -11,7 +11,7 @@ using Roslyn.Utilities;
 
 namespace Microsoft.CodeAnalysis
 {
-    [DebuggerDisplay("{GetDebuggerDisplay(), nq}")]
+    [DebuggerDisplay("{" + nameof(GetDebuggerDisplay) + "(), nq}")]
     [DebuggerTypeProxy(typeof(DebuggerProxy))]
     public class DiagnosticBag
     {
@@ -22,7 +22,7 @@ namespace Microsoft.CodeAnalysis
             get
             {
                 ConcurrentQueue<Diagnostic> bag = _lazyBag;
-                return bag == null || bag.IsEmpty;
+                return bag?.IsEmpty != false;
             }
         }
 

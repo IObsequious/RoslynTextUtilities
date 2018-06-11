@@ -1,10 +1,10 @@
-using System;
+﻿using System;
 using System.Diagnostics;
 using System.Text;
 
 namespace Microsoft.CodeAnalysis.PooledObjects
 {
-    public class PooledStringBuilder
+    public sealed class PooledStringBuilder
     {
         public readonly StringBuilder Builder = new StringBuilder();
         private readonly ObjectPool<PooledStringBuilder> _pool;
@@ -33,7 +33,6 @@ namespace Microsoft.CodeAnalysis.PooledObjects
             }
             else
             {
-                _pool.ForgetTrackedObject(this);
             }
         }
 
@@ -62,8 +61,7 @@ namespace Microsoft.CodeAnalysis.PooledObjects
         public static ObjectPool<PooledStringBuilder> CreatePool(int size = 32)
         {
             ObjectPool<PooledStringBuilder> pool = null;
-            pool = new ObjectPool<PooledStringBuilder>(factory: () => new PooledStringBuilder(pool), size: size);
-            return pool;
+            return new ObjectPool<PooledStringBuilder>(factory: () => new PooledStringBuilder(pool), size: size);
         }
 
         public static PooledStringBuilder GetInstance()

@@ -154,7 +154,7 @@ namespace Microsoft.CodeAnalysis.InternalUtilities
                 return true;
             }
 
-            value = default(V);
+            value = default;
             return false;
         }
 

@@ -9,7 +9,7 @@ using Roslyn.Utilities;
 
 namespace Microsoft.CodeAnalysis
 {
-    [DebuggerDisplay("{GetDebuggerDisplay(), nq}")]
+    [DebuggerDisplay("{" + nameof(GetDebuggerDisplay) + "(), nq}")]
     public abstract partial class Diagnostic : IEquatable<Diagnostic>, IFormattable
     {
         internal const string CompilerDiagnosticCategory = "Compiler";
@@ -234,8 +234,8 @@ namespace Microsoft.CodeAnalysis
         {
             get
             {
-                return DefaultSeverity == DiagnosticSeverity.Warning &&
-                       Severity == DiagnosticSeverity.Error;
+                return DefaultSeverity == DiagnosticSeverity.Warning
+                       && Severity == DiagnosticSeverity.Error;
             }
         }
 
@@ -259,7 +259,7 @@ namespace Microsoft.CodeAnalysis
             }
         }
 
-        string IFormattable.ToString(string ignored, IFormatProvider formatProvider)
+        string IFormattable.ToString(string format, IFormatProvider formatProvider)
         {
             return DiagnosticFormatter.Instance.Format(this, formatProvider);
         }
@@ -273,7 +273,7 @@ namespace Microsoft.CodeAnalysis
 
         public abstract override int GetHashCode();
 
-        public abstract bool Equals(Diagnostic obj);
+        public abstract bool Equals(Diagnostic other);
 
         private string GetDebuggerDisplay()
         {
@@ -375,8 +375,6 @@ namespace Microsoft.CodeAnalysis
                     return 1;
             }
         }
-
-
     }
 
     public abstract class RequiredLanguageVersion : IFormattable

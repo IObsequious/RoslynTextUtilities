@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 
 namespace Microsoft.CodeAnalysis
 {
@@ -34,7 +34,7 @@ namespace Microsoft.CodeAnalysis
             return ToString(null);
         }
 
-        string IFormattable.ToString(string ignored, IFormatProvider formatProvider)
+        string IFormattable.ToString(string format, IFormatProvider formatProvider)
         {
             return ToString(formatProvider);
         }
@@ -52,11 +52,11 @@ namespace Microsoft.CodeAnalysis
             }
         }
 
-        public sealed override bool Equals(object other)
+        public sealed override bool Equals(object obj)
         {
             try
             {
-                return AreEqual(other);
+                return AreEqual(obj);
             }
             catch (Exception ex)
             {

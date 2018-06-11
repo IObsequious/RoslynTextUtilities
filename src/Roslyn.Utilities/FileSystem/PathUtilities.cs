@@ -39,7 +39,7 @@ namespace Roslyn.Utilities
             int lastSeparator = s.Length;
             while (lastSeparator > 0 && IsDirectorySeparator(s[lastSeparator - 1]))
             {
-                lastSeparator = lastSeparator - 1;
+                lastSeparator--;
             }
 
             if (lastSeparator != s.Length)
@@ -284,9 +284,9 @@ namespace Roslyn.Utilities
                 return true;
             }
 
-            return path.Length >= 2 &&
-                   IsDirectorySeparator(path[0]) &&
-                   IsDirectorySeparator(path[1]);
+            return path.Length >= 2
+                   && IsDirectorySeparator(path[0])
+                   && IsDirectorySeparator(path[1]);
         }
 
         private static bool IsDriveRootedAbsolutePath(string path)
@@ -347,10 +347,10 @@ namespace Roslyn.Utilities
         {
             Debug.Assert(assemblyDisplayNameOrPath != null);
             string extension = FileNameUtilities.GetExtension(assemblyDisplayNameOrPath);
-            return string.Equals(extension, b: ".dll", comparisonType: StringComparison.OrdinalIgnoreCase) ||
-                   string.Equals(extension, b: ".exe", comparisonType: StringComparison.OrdinalIgnoreCase) ||
-                   assemblyDisplayNameOrPath.IndexOf(DirectorySeparatorChar) != -1 ||
-                   assemblyDisplayNameOrPath.IndexOf(AltDirectorySeparatorChar) != -1;
+            return string.Equals(extension, b: ".dll", comparisonType: StringComparison.OrdinalIgnoreCase)
+                   || string.Equals(extension, b: ".exe", comparisonType: StringComparison.OrdinalIgnoreCase)
+                   || assemblyDisplayNameOrPath.IndexOf(DirectorySeparatorChar) != -1
+                   || assemblyDisplayNameOrPath.IndexOf(AltDirectorySeparatorChar) != -1;
         }
 
         public static bool ContainsPathComponent(string path, string component, bool ignoreCase)
@@ -425,10 +425,10 @@ namespace Roslyn.Utilities
 
         public static bool IsChildPath(string parentPath, string childPath)
         {
-            return parentPath.Length > 0 &&
-                   childPath.Length > parentPath.Length &&
-                   PathsEqual(childPath, parentPath, parentPath.Length) &&
-                   (IsDirectorySeparator(parentPath[parentPath.Length - 1]) || IsDirectorySeparator(childPath[parentPath.Length]));
+            return parentPath.Length > 0
+                   && childPath.Length > parentPath.Length
+                   && PathsEqual(childPath, parentPath, parentPath.Length)
+                   && (IsDirectorySeparator(parentPath[parentPath.Length - 1]) || IsDirectorySeparator(childPath[parentPath.Length]));
         }
 
         private static string GetRelativeChildPath(string parentPath, string childPath)
@@ -513,9 +513,9 @@ namespace Roslyn.Utilities
                 return filePath;
             }
 
-            foreach (var kv in pathMap)
+            foreach (KeyValuePair<string, string> kv in pathMap)
             {
-                var oldPrefix = kv.Key;
+                string oldPrefix = kv.Key;
                 if (!(oldPrefix?.Length > 0))
                 {
                     continue;
@@ -523,7 +523,7 @@ namespace Roslyn.Utilities
 
                 if (filePath.StartsWith(oldPrefix, StringComparison.Ordinal))
                 {
-                    var replacementPrefix = kv.Value;
+                    string replacementPrefix = kv.Value;
                     string replacement = replacementPrefix + filePath.Substring(oldPrefix.Length);
                     bool hasSlash = replacementPrefix.IndexOf('/') >= 0;
                     bool hasBackslash = replacementPrefix.IndexOf('\\') >= 0;
@@ -550,9 +550,9 @@ namespace Roslyn.Utilities
                 return !string.IsNullOrEmpty(fileInfo.Name);
             }
             catch (Exception ex) when (
-                ex is ArgumentException ||
-                ex is PathTooLongException ||
-                ex is NotSupportedException)
+                ex is ArgumentException
+                || ex is PathTooLongException
+                || ex is NotSupportedException)
             {
                 return false;
             }
@@ -577,9 +577,9 @@ namespace Roslyn.Utilities
                 return PathsEqual(x, y);
             }
 
-            public int GetHashCode(string s)
+            public int GetHashCode(string obj)
             {
-                return PathHashCode(s);
+                return PathHashCode(obj);
             }
         }
     }

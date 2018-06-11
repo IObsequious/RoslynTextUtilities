@@ -34,7 +34,6 @@ namespace ConsoleTester.Refactoring
 
         public Solution Solution => this.Document?.Project?.Solution;
 
-
         public IEnumerable<TNode> GetNodes<TNode>() where TNode : SyntaxNode
         {
             return Root?.DescendantNodes(_ => true).OfType<TNode>();
@@ -43,7 +42,7 @@ namespace ConsoleTester.Refactoring
         public static async Task<SyntacticDocument> CreateAsync(
             Document document, CancellationToken cancellationToken)
         {
-            var text = await document.GetTextAsync(cancellationToken).ConfigureAwait(false);
+            SourceText text = await document.GetTextAsync(cancellationToken).ConfigureAwait(false);
             var root = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
             return new SyntacticDocument(document, text, root.SyntaxTree, root);
         }

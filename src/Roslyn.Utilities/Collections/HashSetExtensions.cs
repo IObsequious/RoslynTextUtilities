@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace Microsoft.CodeAnalysis
 {
@@ -9,7 +9,7 @@ namespace Microsoft.CodeAnalysis
             return hashSet == null || hashSet.Count == 0;
         }
 
-        public static bool InitializeAndAdd<T>(ref HashSet<T> hashSet, T item) where T : class
+        public static bool InitializeAndAdd<T>(this HashSet<T> hashSet, T item) where T : class
         {
             if (item is null)
             {

@@ -1,11 +1,11 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Diagnostics;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.PooledObjects;
 
 namespace Roslyn.Utilities
 {
-    [DebuggerDisplay(value: "{GetDebuggerDisplay(), nq}")]
+    [DebuggerDisplay(value: "{" + nameof(GetDebuggerDisplay) + "(), nq}")]
     internal struct EnumField
     {
         public static readonly IComparer<EnumField> Comparer = new EnumFieldComparer();
@@ -40,7 +40,7 @@ namespace Roslyn.Utilities
             int end = sortedFields.Count;
             while (start < end)
             {
-                int mid = start + (end - start) / 2;
+                int mid = start + ((end - start) / 2);
                 long diff = unchecked((long) value - (long) sortedFields[mid].Value);
                 if (diff == 0)
                 {
@@ -62,15 +62,15 @@ namespace Roslyn.Utilities
                 }
             }
 
-            return default(EnumField);
+            return default;
         }
 
         private class EnumFieldComparer : IComparer<EnumField>
         {
-            int IComparer<EnumField>.Compare(EnumField field1, EnumField field2)
+            int IComparer<EnumField>.Compare(EnumField x, EnumField y)
             {
-                int diff = unchecked(((long) field2.Value).CompareTo((long) field1.Value));
-                return diff == 0 ? string.CompareOrdinal(field1.Name, field2.Name) : diff;
+                int diff = unchecked(((long) y.Value).CompareTo((long) x.Value));
+                return diff == 0 ? string.CompareOrdinal(x.Name, y.Name) : diff;
             }
         }
     }

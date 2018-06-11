@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using Microsoft.CodeAnalysis.Text;
 using Roslyn.Utilities;
 
@@ -6,31 +6,15 @@ namespace Microsoft.CodeAnalysis
 {
     public struct FileLinePositionSpan : IEquatable<FileLinePositionSpan>
     {
-        private readonly string _path;
-        private readonly LinePositionSpan _span;
-        private readonly bool _hasMappedPath;
+        public string Path { get; }
 
-        public string Path
-        {
-            get
-            {
-                return _path;
-            }
-        }
-
-        public bool HasMappedPath
-        {
-            get
-            {
-                return _hasMappedPath;
-            }
-        }
+        public bool HasMappedPath { get; }
 
         public LinePosition StartLinePosition
         {
             get
             {
-                return _span.Start;
+                return Span.Start;
             }
         }
 
@@ -38,17 +22,11 @@ namespace Microsoft.CodeAnalysis
         {
             get
             {
-                return _span.End;
+                return Span.End;
             }
         }
 
-        public LinePositionSpan Span
-        {
-            get
-            {
-                return _span;
-            }
-        }
+        public LinePositionSpan Span { get; }
 
         public FileLinePositionSpan(string path, LinePosition start, LinePosition end)
             : this(path, new LinePositionSpan(start, end))
@@ -62,46 +40,46 @@ namespace Microsoft.CodeAnalysis
                 throw new ArgumentNullException(nameof(path));
             }
 
-            _path = path;
-            _span = span;
-            _hasMappedPath = false;
+            Path = path;
+            Span = span;
+            HasMappedPath = false;
         }
 
         internal FileLinePositionSpan(string path, LinePositionSpan span, bool hasMappedPath)
         {
-            _path = path;
-            _span = span;
-            _hasMappedPath = hasMappedPath;
+            Path = path;
+            Span = span;
+            HasMappedPath = hasMappedPath;
         }
 
         public bool IsValid
         {
             get
             {
-                return _path != null;
+                return Path != null;
             }
         }
 
         public bool Equals(FileLinePositionSpan other)
         {
-            return _span.Equals(other._span) &&
-                   _hasMappedPath == other._hasMappedPath &&
-                   string.Equals(_path, other._path, StringComparison.Ordinal);
+            return Span.Equals(other.Span)
+                   && HasMappedPath == other.HasMappedPath
+                   && string.Equals(Path, other.Path, StringComparison.Ordinal);
         }
 
-        public override bool Equals(object other)
+        public override bool Equals(object obj)
         {
-            return other is FileLinePositionSpan && Equals((FileLinePositionSpan) other);
+            return obj is FileLinePositionSpan fileLinePositionSpan && Equals(fileLinePositionSpan);
         }
 
         public override int GetHashCode()
         {
-            return Hash.Combine(_path, Hash.Combine(_hasMappedPath, _span.GetHashCode()));
+            return Hash.Combine(Path, Hash.Combine(HasMappedPath, Span.GetHashCode()));
         }
 
         public override string ToString()
         {
-            return _path + ": " + _span;
+            return Path + ": " + Span;
         }
     }
 }

@@ -103,11 +103,11 @@ namespace Microsoft.CodeAnalysis
         protected override bool AreEqual(object other)
         {
             LocalizableResourceString otherResourceString = other as LocalizableResourceString;
-            return otherResourceString != null &&
-                   _nameOfLocalizableResource == otherResourceString._nameOfLocalizableResource &&
-                   _resourceManager == otherResourceString._resourceManager &&
-                   _resourceSource == otherResourceString._resourceSource &&
-                   _formatArguments.SequenceEqual(otherResourceString._formatArguments, (a, b) => a == b);
+            return otherResourceString != null
+                   && _nameOfLocalizableResource == otherResourceString._nameOfLocalizableResource
+                   && _resourceManager == otherResourceString._resourceManager
+                   && _resourceSource == otherResourceString._resourceSource
+                   && _formatArguments.SequenceEqual(otherResourceString._formatArguments, (a, b) => a == b);
         }
 
         protected override int GetHash()

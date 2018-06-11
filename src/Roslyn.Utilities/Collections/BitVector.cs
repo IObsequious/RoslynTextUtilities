@@ -12,11 +12,8 @@ namespace Microsoft.CodeAnalysis
         private const int Log2BitsPerWord = 5;
         public const int BitsPerWord = 1 << Log2BitsPerWord;
         private static readonly uint[] s_emptyArray = Array.Empty<uint>();
-        private static readonly BitVector s_nullValue = new BitVector(0, null, 0);
-        private static readonly BitVector s_emptyValue = new BitVector(0, s_emptyArray, 0);
         private uint _bits0;
         private uint[] _bits;
-        private int _capacity;
 
         private BitVector(uint bits0, uint[] bits, int capacity)
         {
@@ -24,18 +21,18 @@ namespace Microsoft.CodeAnalysis
             Debug.Assert(requiredWords == 0 || requiredWords <= bits.Length);
             _bits0 = bits0;
             _bits = bits;
-            _capacity = capacity;
+            Capacity = capacity;
             Check();
         }
 
         public bool Equals(BitVector other)
         {
-            return _capacity == other._capacity && _bits0 == other._bits0 && _bits.ValueEquals(other._bits);
+            return Capacity == other.Capacity && _bits0 == other._bits0 && _bits.ValueEquals(other._bits);
         }
 
         public override bool Equals(object obj)
         {
-            return obj is BitVector && Equals((BitVector) obj);
+            return obj is BitVector bitVector && Equals(bitVector);
         }
 
         public override int GetHashCode()
@@ -49,7 +46,7 @@ namespace Microsoft.CodeAnalysis
                 }
             }
 
-            return Hash.Combine(_capacity, bitsHash);
+            return Hash.Combine(Capacity, bitsHash);
         }
 
         private static int WordsForCapacity(int capacity)
@@ -63,23 +60,17 @@ namespace Microsoft.CodeAnalysis
             return lastIndex;
         }
 
-        public int Capacity
-        {
-            get
-            {
-                return _capacity;
-            }
-        }
+        public int Capacity { get; private set; }
 
-        [Conditional(conditionString: "DEBUG_BITARRAY")]
+        [Conditional("DEBUG_BITARRAY")]
         private void Check()
         {
-            Debug.Assert(_capacity == 0 || WordsForCapacity(_capacity) <= _bits.Length);
+            Debug.Assert(Capacity == 0 || WordsForCapacity(Capacity) <= _bits.Length);
         }
 
         public void EnsureCapacity(int newCapacity)
         {
-            if (newCapacity > _capacity)
+            if (newCapacity > Capacity)
             {
                 int requiredWords = WordsForCapacity(newCapacity);
                 if (requiredWords > _bits.Length)
@@ -87,7 +78,7 @@ namespace Microsoft.CodeAnalysis
                     Array.Resize(ref _bits, requiredWords);
                 }
 
-                _capacity = newCapacity;
+                Capacity = newCapacity;
                 Check();
             }
 
@@ -96,7 +87,7 @@ namespace Microsoft.CodeAnalysis
 
         public IEnumerable<uint> Words()
         {
-            if (_capacity > 0)
+            if (Capacity > 0)
             {
                 yield return _bits0;
             }
@@ -117,7 +108,7 @@ namespace Microsoft.CodeAnalysis
                     uint mask = (uint) 1 << bit;
                     if ((_bits0 & mask) != 0)
                     {
-                        if (bit >= _capacity)
+                        if (bit >= Capacity)
                         {
                             yield break;
                         }
@@ -138,7 +129,7 @@ namespace Microsoft.CodeAnalysis
                         if ((w & mask) != 0)
                         {
                             int bit = ((i + 1) << Log2BitsPerWord) | b;
-                            if (bit >= _capacity)
+                            if (bit >= Capacity)
                             {
                                 yield break;
                             }
@@ -197,32 +188,14 @@ namespace Microsoft.CodeAnalysis
 
         public BitVector Clone()
         {
-            return new BitVector(_bits0, _bits == null ? null : _bits.Length == 0 ? s_emptyArray : (uint[]) _bits.Clone(), _capacity);
+            return new BitVector(_bits0, _bits == null ? null : _bits.Length == 0 ? s_emptyArray : (uint[]) _bits.Clone(), Capacity);
         }
 
-        public bool IsNull
-        {
-            get
-            {
-                return _bits == null;
-            }
-        }
+        public bool IsNull => _bits == null;
 
-        public static BitVector Null
-        {
-            get
-            {
-                return s_nullValue;
-            }
-        }
+        public static BitVector Null { get; } = new BitVector(0, null, 0);
 
-        public static BitVector Empty
-        {
-            get
-            {
-                return s_emptyValue;
-            }
-        }
+        public static BitVector Empty { get; } = new BitVector(0, s_emptyArray, 0);
 
         public bool IntersectWith(BitVector other)
         {
@@ -268,12 +241,12 @@ namespace Microsoft.CodeAnalysis
             return anyChanged;
         }
 
-        public bool UnionWith( BitVector other)
+        public bool UnionWith(BitVector other)
         {
             bool anyChanged = false;
-            if (other._capacity > _capacity)
+            if (other.Capacity > Capacity)
             {
-                EnsureCapacity(other._capacity);
+                EnsureCapacity(other.Capacity);
             }
 
             uint oldbits = _bits0;
@@ -301,7 +274,7 @@ namespace Microsoft.CodeAnalysis
         {
             get
             {
-                if (index >= _capacity)
+                if (index >= Capacity)
                 {
                     return false;
                 }
@@ -312,7 +285,7 @@ namespace Microsoft.CodeAnalysis
             }
             set
             {
-                if (index >= _capacity)
+                if (index >= Capacity)
                 {
                     EnsureCapacity(index + 1);
                 }

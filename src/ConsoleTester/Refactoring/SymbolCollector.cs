@@ -4,7 +4,6 @@ using Microsoft.CodeAnalysis;
 
 namespace ConsoleTester.Refactoring
 {
-
     public class CollectionEntry
     {
         public INamedTypeSymbol Class;
@@ -23,6 +22,7 @@ namespace ConsoleTester.Refactoring
         {
             Types = new List<CollectionEntry>();
         }
+
         public List<CollectionEntry> Types { get; }
 
         public override void VisitNamespace(INamespaceSymbol symbol)

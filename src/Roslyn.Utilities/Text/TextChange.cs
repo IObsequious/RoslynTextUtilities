@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using Roslyn.Utilities;
 
@@ -29,14 +29,14 @@ namespace Microsoft.CodeAnalysis.Text
 
         public override bool Equals(object obj)
         {
-            return obj is TextChange && Equals((TextChange) obj);
+            return obj is TextChange textChange && Equals(textChange);
         }
 
         public bool Equals(TextChange other)
         {
             return
-                EqualityComparer<TextSpan>.Default.Equals(Span, other.Span) &&
-                EqualityComparer<string>.Default.Equals(NewText, other.NewText);
+                EqualityComparer<TextSpan>.Default.Equals(Span, other.Span)
+                && EqualityComparer<string>.Default.Equals(NewText, other.NewText);
         }
 
         public override int GetHashCode()

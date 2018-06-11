@@ -21,44 +21,17 @@ namespace Microsoft.CodeAnalysis.Collections
             return _array;
         }
 
-        public override bool CanRead
-        {
-            get
-            {
-                return true;
-            }
-        }
+        public override bool CanRead => true;
 
-        public override bool CanSeek
-        {
-            get
-            {
-                return true;
-            }
-        }
+        public override bool CanSeek => true;
 
-        public override bool CanWrite
-        {
-            get
-            {
-                return false;
-            }
-        }
+        public override bool CanWrite => false;
 
-        public override long Length
-        {
-            get
-            {
-                return _array.Length;
-            }
-        }
+        public override long Length => _array.Length;
 
         public override long Position
         {
-            get
-            {
-                return _position;
-            }
+            get => _position;
             set
             {
                 if (value < 0 || value >= _array.Length)

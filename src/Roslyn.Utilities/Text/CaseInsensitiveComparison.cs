@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Diagnostics;
 using System.Globalization;
 using System.Text;
@@ -55,34 +55,34 @@ namespace Microsoft.CodeAnalysis
                 return c1 == c2 ? 0 : ToLower(c1) - ToLower(c2);
             }
 
-            public override int Compare(string str1, string str2)
+            public override int Compare(string x, string y)
             {
-                if ((object) str1 == str2)
+                if ((object) x == y)
                 {
                     return 0;
                 }
 
-                if ((object) str1 == null)
+                if ((object) x == null)
                 {
                     return -1;
                 }
 
-                if ((object) str2 == null)
+                if ((object) y == null)
                 {
                     return 1;
                 }
 
-                int len = Math.Min(str1.Length, str2.Length);
+                int len = Math.Min(x.Length, y.Length);
                 for (int i = 0; i < len; i++)
                 {
-                    int ordDiff = CompareLowerUnicode(str1[i], str2[i]);
+                    int ordDiff = CompareLowerUnicode(x[i], y[i]);
                     if (ordDiff != 0)
                     {
                         return ordDiff;
                     }
                 }
 
-                return str1.Length - str2.Length;
+                return x.Length - y.Length;
             }
 
             private static bool AreEqualLowerUnicode(char c1, char c2)
@@ -90,26 +90,26 @@ namespace Microsoft.CodeAnalysis
                 return c1 == c2 || ToLower(c1) == ToLower(c2);
             }
 
-            public override bool Equals(string str1, string str2)
+            public override bool Equals(string x, string y)
             {
-                if ((object) str1 == str2)
+                if ((object) x == y)
                 {
                     return true;
                 }
 
-                if ((object) str1 == null || (object) str2 == null)
+                if ((object) x == null || (object) y == null)
                 {
                     return false;
                 }
 
-                if (str1.Length != str2.Length)
+                if (x.Length != y.Length)
                 {
                     return false;
                 }
 
-                for (int i = 0; i < str1.Length; i++)
+                for (int i = 0; i < x.Length; i++)
                 {
-                    if (!AreEqualLowerUnicode(str1[i], str2[i]))
+                    if (!AreEqualLowerUnicode(x[i], y[i]))
                     {
                         return false;
                     }
@@ -179,12 +179,12 @@ namespace Microsoft.CodeAnalysis
                 return true;
             }
 
-            public override int GetHashCode(string str)
+            public override int GetHashCode(string obj)
             {
                 int hashCode = Hash.FnvOffsetBias;
-                for (int i = 0; i < str.Length; i++)
+                foreach (char t in obj)
                 {
-                    hashCode = Hash.CombineFNVHash(hashCode, ToLower(str[i]));
+                    hashCode = Hash.CombineFNVHash(hashCode, ToLower(t));
                 }
 
                 return hashCode;

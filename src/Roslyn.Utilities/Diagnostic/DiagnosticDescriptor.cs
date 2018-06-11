@@ -114,15 +114,15 @@ namespace Microsoft.CodeAnalysis
         public bool Equals(DiagnosticDescriptor other)
         {
             return
-                other != null &&
-                Category == other.Category &&
-                DefaultSeverity == other.DefaultSeverity &&
-                Description.Equals(other.Description) &&
-                HelpLinkUri == other.HelpLinkUri &&
-                Id == other.Id &&
-                IsEnabledByDefault == other.IsEnabledByDefault &&
-                MessageFormat.Equals(other.MessageFormat) &&
-                Title.Equals(other.Title);
+                other != null
+                && Category == other.Category
+                && DefaultSeverity == other.DefaultSeverity
+                && Description.Equals(other.Description)
+                && HelpLinkUri == other.HelpLinkUri
+                && Id == other.Id
+                && IsEnabledByDefault == other.IsEnabledByDefault
+                && MessageFormat.Equals(other.MessageFormat)
+                && Title.Equals(other.Title);
         }
 
         public override bool Equals(object obj)
@@ -141,23 +141,5 @@ namespace Microsoft.CodeAnalysis
                                     Hash.Combine(MessageFormat.GetHashCode(),
                                         Title.GetHashCode())))))));
         }
-
-        private static ReportDiagnostic MapSeverityToReport(DiagnosticSeverity severity)
-        {
-            switch (severity)
-            {
-                case DiagnosticSeverity.Hidden:
-                    return ReportDiagnostic.Hidden;
-                case DiagnosticSeverity.Info:
-                    return ReportDiagnostic.Info;
-                case DiagnosticSeverity.Warning:
-                    return ReportDiagnostic.Warn;
-                case DiagnosticSeverity.Error:
-                    return ReportDiagnostic.Error;
-                default:
-                    throw ExceptionUtilities.UnexpectedValue(severity);
-            }
-        }
-
     }
 }

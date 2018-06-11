@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Diagnostics;
 using System.Threading;
 
@@ -57,10 +57,10 @@ namespace Microsoft.CodeAnalysis.Collections
             bool added = false;
             while (true)
             {
-                if (AddHelper(ref set._v1, i, ref added) ||
-                    AddHelper(ref set._v2, i, ref added) ||
-                    AddHelper(ref set._v3, i, ref added) ||
-                    AddHelper(ref set._v4, i, ref added))
+                if (AddHelper(ref set._v1, i, ref added)
+                    || AddHelper(ref set._v2, i, ref added)
+                    || AddHelper(ref set._v3, i, ref added)
+                    || AddHelper(ref set._v4, i, ref added))
                 {
                     return added;
                 }

@@ -14,9 +14,9 @@ namespace Microsoft.CodeAnalysis.Text
         /// <returns>true if the character is a hexadecimal digit 0-9, A-F, a-f.</returns>
         internal static bool IsHexDigit(char c)
         {
-            return (c >= '0' && c <= '9') ||
-                   (c >= 'A' && c <= 'F') ||
-                   (c >= 'a' && c <= 'f');
+            return (c >= '0' && c <= '9')
+                   || (c >= 'A' && c <= 'F')
+                   || (c >= 'a' && c <= 'f');
         }
 
         /// <summary>
@@ -46,7 +46,7 @@ namespace Microsoft.CodeAnalysis.Text
         internal static int HexValue(char c)
         {
             Debug.Assert(IsHexDigit(c));
-            return (c >= '0' && c <= '9') ? c - '0' : (c & 0xdf) - 'A' + 10;
+            return c >= '0' && c <= '9' ? c - '0' : (c & 0xdf) - 'A' + 10;
         }
 
         /// <summary>
@@ -176,6 +176,7 @@ namespace Microsoft.CodeAnalysis.Text
         /// <summary>
         /// Check that the name is a valid identifier.
         /// </summary>
+        /// <param name="name"></param>
         public static bool IsValidIdentifier(string name)
         {
             return UnicodeCharacterUtilities.IsValidIdentifier(name);
@@ -190,6 +191,7 @@ namespace Microsoft.CodeAnalysis.Text
         /// characters will have been dropped from the search string).
         /// See DevDiv #14432 for more.
         /// </summary>
+        /// <param name="name"></param>
         internal static bool ContainsDroppedIdentifierCharacters(string name)
         {
             if (string.IsNullOrEmpty(name))
@@ -290,7 +292,6 @@ namespace Microsoft.CodeAnalysis.Text
         {
             return c == '\n' || c == '\r' || c == '\u0085' || c == '\u2028' || c == '\u2029';
         }
-
 
         public static bool IsLetterChar(UnicodeCategory cat)
         {

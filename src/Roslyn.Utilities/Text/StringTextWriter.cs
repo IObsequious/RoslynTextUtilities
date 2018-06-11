@@ -8,27 +8,20 @@ namespace Microsoft.CodeAnalysis.Text
     public class StringTextWriter : SourceTextWriter
     {
         private readonly StringBuilder _builder;
-        private readonly Encoding _encoding;
         private readonly SourceHashAlgorithm _checksumAlgorithm;
 
         public StringTextWriter(Encoding encoding, SourceHashAlgorithm checksumAlgorithm, int capacity)
         {
             _builder = new StringBuilder(capacity);
-            _encoding = encoding;
+            Encoding = encoding;
             _checksumAlgorithm = checksumAlgorithm;
         }
 
-        public override Encoding Encoding
-        {
-            get
-            {
-                return _encoding;
-            }
-        }
+        public override Encoding Encoding { get; }
 
         public override SourceText ToSourceText()
         {
-            return new StringText(_builder.ToString(), _encoding, checksumAlgorithm: _checksumAlgorithm);
+            return new StringText(_builder.ToString(), Encoding, checksumAlgorithm: _checksumAlgorithm);
         }
 
         public override void Write(char value)

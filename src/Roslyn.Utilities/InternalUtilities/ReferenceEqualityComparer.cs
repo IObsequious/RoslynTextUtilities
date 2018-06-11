@@ -1,9 +1,9 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 
 namespace Roslyn.Utilities
 {
-    public class ReferenceEqualityComparer : IEqualityComparer<object>
+    public sealed class ReferenceEqualityComparer : IEqualityComparer<object>
     {
         public static readonly ReferenceEqualityComparer Instance = new ReferenceEqualityComparer();
 
@@ -11,14 +11,14 @@ namespace Roslyn.Utilities
         {
         }
 
-        bool IEqualityComparer<object>.Equals(object a, object b)
+        bool IEqualityComparer<object>.Equals(object x, object y)
         {
-            return a == b;
+            return x == y;
         }
 
-        int IEqualityComparer<object>.GetHashCode(object a)
+        int IEqualityComparer<object>.GetHashCode(object obj)
         {
-            return GetHashCode(a);
+            return GetHashCode(obj);
         }
 
         public static int GetHashCode(object a)

@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using Roslyn.Utilities;
 
 namespace Microsoft.CodeAnalysis.Text
@@ -114,7 +114,7 @@ namespace Microsoft.CodeAnalysis.Text
 
         public override bool Equals(object obj)
         {
-            return obj is TextSpan && Equals((TextSpan) obj);
+            return obj != null && obj is TextSpan && Equals((TextSpan) obj);
         }
 
         public override int GetHashCode()
